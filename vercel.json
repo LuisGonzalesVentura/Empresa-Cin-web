@@ -2,11 +2,11 @@
     "builds": [
       {
         "src": "package.json",
-        "use": "@vercel/node",
-        "config": {
-          "pnpmArgs": "--no-frozen-lockfile"
-        }
+        "use": "@vercel/node"
       }
-    ]
+    ],
+    "env": {
+      "PNPM_FROZEN_LOCKFILE": "false"
+    }
   }
   
