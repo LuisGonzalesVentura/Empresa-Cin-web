@@ -10,7 +10,7 @@ export default function Footer() {
         
         {/* Sección 1 */}
         <div>
-          <h3 className="font-bold mb-3">Empresas CIN</h3>
+          <h3 className="font-bold mb-3">Industrias CIN</h3>
           <ul className="space-y-1">
             <li><Link href="#">Mi Cuenta</Link></li>
             <li><Link href="#">Seguimiento en línea</Link></li>

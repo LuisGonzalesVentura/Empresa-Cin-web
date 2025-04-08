@@ -61,7 +61,7 @@ export default function Navbar() {
     <Link href="/dashboard/hervidos">Hervidos</Link>
   </li>
   <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
-    Contactanos
+    <Link href="/dashboard/contactanos">Contactanos</Link>
   </li>
   <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
     ¿Quienes somos?
