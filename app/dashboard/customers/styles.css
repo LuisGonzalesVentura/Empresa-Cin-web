@@ -1,0 +1,616 @@
+#textfon {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500; /* Puedes cambiar a 600 o 700 si quieres más grosor */
+}
+
+.mainContainer * {
+    padding: 0%;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+
+}
+#textfon{
+    font-family: "Bungee";
+}
+.textpromo{
+    background-color: #FF0004;
+}
+.textpromo h1{
+    text-align: center;
+    padding: 20px 0px;
+    font-family: "Bungee";
+    color: #fff;
+    font-size: 40PX;
+
+}
+.textpromo img{
+    background-color: #fff;
+    padding: 15px 30px 10px 30px;
+    border-radius: 20px 0px 0px 20px;
+    width: 220px;
+    position: fixed;
+    z-index: 999;
+    right: 0px;
+}
+
+.Promoinf{
+    background-color: #FD6100;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 70px 10% 0;
+    /*background-image: url(file:///F:/Marketing%20Digital%20CIN/Gesti%C3%B3n%202025/Sitio%20web/imagenes/fondo%20amarillo%202.svg);
+    background-size:cover;
+    background-position: bottom;*/
+}
+.Promoinf .textoplay {
+    color: #fff;
+}
+.Promoinf .textoplay h1{
+    justify-content: center;
+    align-items: center;
+    font-size: 10rem;
+    margin-bottom: -30px;
+}
+.Promoinf .textoplay h3{
+    justify-content: center;
+    align-items: center;
+    font-size:3.2rem;
+    margin-bottom: -10px;
+}
+.Promoinf .textoplay h3 span{
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 5px;
+    border-radius: 10px;
+    color: #FD6100;
+}
+.Promoinf .textoplay h4{
+    justify-content: center;
+    align-items: center;
+    font-size: 73px;
+}
+.Promoinf .textoplay img{
+    width: 70%;
+    padding-bottom: 15px;
+}
+.Promoinf .imagenplay{
+    max-width:80%;
+}
+.pasos{
+    background-color: #FD6100;
+    width: 100%;
+    height: 100%;
+
+}
+.pasos .text-descripcion{
+    padding: 70px 10% 0;
+}
+.pasos .text-descripcion h1{
+    text-align: center;
+    font-size: 70px;
+    color: #fff;
+    padding-top: 50px;
+}
+.pasos .text-descripcion p{
+    text-align: center;
+    justify-content: center;
+    color: #fff;
+    font-family: "Bungee";
+    font-size: 31px;
+    font-weight: 200;
+}
+
+.pasos .cuadros{
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 70px 10% 0;
+
+}
+.pasos .cuadros div{
+    width: 100%;
+    height: 500px;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+    margin: 15px;
+}
+.pasos .cuadros h1{
+    text-align: center;
+    justify-content: center;
+    color: #FD6100;
+    font-size: 3rem;
+    padding: 5px;
+
+}
+.pasos .cuadros p{
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    font-weight: 200;
+    text-align: center;
+    color: #612500;
+}
+.pasos .cuadros .pasos-cuadros-img-alig{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: transparent;
+    height: auto;
+}
+
+.mapa{
+    width: auto;
+    height: auto;
+    background-color: #FF9D00;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 10% 0;
+
+
+}
+
+#mapa-google{
+    width: 100%;
+    height: 480px;
+    justify-items: center;
+    justify-content: center ;
+}
+.mapa .mapa-texto{
+    width: 80rem;
+}
+.mapa .mapa-texto h1{
+    color: #fff;
+    font-size: 90px;
+}
+.mapa .mapa-texto h2{
+    color: #fff;
+    font-size: 65px;
+}
+.mapa .mapa-texto h3{
+    color: #fff;
+    font-size: 40px;
+}
+.mapa .mapa-texto h3 span{
+    font-size: 85px;
+}
+.mapa .mapa-texto p{
+    padding-top: 20px;
+    font-size: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    padding-bottom: 20px;
+
+
+}
+.mapa .map-section h2{
+    text-align: center;
+    color: #FD6100;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 15px 15px 0px 0px;
+}
+.fecha{
+    width: 100%;
+    background-color: #000000;
+
+}
+.fecha h1{
+    font-size: 35px;
+    color: #fff;
+    text-align: center;
+    padding: 25px 0px 25px 0px;
+}
+.jugopromo{
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    background-color: #FD6100;
+    padding: 70px 10% 0;
+}
+
+.jugopromo .cuadro{
+    padding-top: 15px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.jugopromo .cuadro div{
+    position: relative;
+    background-color: #FF0004;
+    margin: 14px;
+    width: 100%;
+    height: 600px;
+    border-radius: 35px;
+    align-items: center;
+    justify-content: center;
+}
+.jugopromo .cuadro h1{
+    color: #fff;
+    font-size: 15px;
+    text-align: center;
+    justify-content: center;
+    font-size: 40px;
+    padding: 15px;
+}
+.jugopromo .jugopromo-texto h1{
+    text-align: center;
+    color: #ffffff;
+    font-size: 55px;
+}
+.jugopromo .jugopromo-texto p{
+    text-align: center;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 25px;
+}
+.jugopromo .cuadro .etiqueta {
+    width: 450px;
+    position: relative;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.jugopromo .cuadro .moneda {
+    width: 350px;
+    position: relative;
+    top: 35%;
+    left: 50%;
+    transform: translate(-60%, -50%);
+    padding-bottom: 60px;
+}
+
+.jugopromo .cuadro div p{
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    font-size: 25px;
+}
+.jugos{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    background-color: #FD6100;
+    padding: 70px 10% 0;
+}
+.jugos div{
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+.jugos h1{
+    color: #fff;
+    font-size: 5rem;
+    text-align: center;
+}
+.jugos p{
+    color: #fff;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+}
+.jugos img {
+    width: 65%;
+    padding-bottom: 25px;
+
+}
+.jugos .img-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.action {
+    margin: 0;
+    padding: 0;
+    display: block;
+    justify-content: center;
+    background-color: #FF0004;
+    width: 100%;
+    height: 100%;  /* Cambié de 150% a 100% */
+}
+
+.action h1{
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+    font-size: 60px;
+}
+.action h2{
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+    font-size: 80px;
+}
+.action h3{
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+    font-size: 100px;
+}
+@media (max-width: 1500px){
+    .Promoinf{
+        padding: 50px 10% 0;
+    }
+    .textpromo h1{
+        font-size: 35px;}
+    .Promoinf .textoplay h1{
+        font-size: 7rem;
+    }
+    .Promoinf .textoplay h3{
+        padding-top: 0.5rem;
+        font-size:2.3rem;}
+    .Promoinf .textoplay h4{
+        padding-top: 12px;
+        font-size: 3.4rem;
+    }
+    #mapa-google{
+        height: 360px;
+    }
+    .mapa .mapa-texto h1{
+        font-size: 75px;
+    }
+    .mapa .mapa-texto h2{
+        font-size: 55px;
+    }
+    .mapa .mapa-texto h3{
+        font-size: 34px;
+    }
+    .mapa .mapa-texto h3 span{
+        font-size: 70px;
+    }
+    .mapa .mapa-texto p{
+        padding-top: 20px;
+        font-size: 20px;
+    }
+    .action h1{
+        font-size: 45px;
+    }
+    .action h2{
+        font-size: 65px;
+    }
+    .action h3{
+        font-size: 65px;
+    }
+
+
+}
+@media (max-width: 1100px){
+
+    .Promoinf{
+        padding: 20px 10% 0;
+    }
+
+    .Promoinf .textoplay img{
+        width: 50%;
+    }
+    .Promoinf .imagenplay{
+        max-width:40%;}
+    .pasos .cuadros div{
+        height: 340px;
+        margin: 8px;
+    }
+    .pasos .cuadros h1{
+        font-size: 2.6rem;
+    }
+
+    .pasos .cuadros div{
+        height: 450px;
+        margin: 8px;
+    }
+    .pasos .cuadros h1{
+        font-size: 2.8rem;
+    }
+    .pasos .cuadros p{
+        font-size: 28px;
+        font-weight: 200;
+        font-family: Arial, sans-serif;
+    }
+    .mapa .mapa-texto{
+        width: 60rem;
+    }
+    .mapa .mapa-texto h1{
+        font-size: 65px;
+    }
+    .mapa .mapa-texto h2{
+        font-size: 50px;
+    }
+    .mapa .mapa-texto h3{
+        font-size: 30px;
+    }
+    .mapa .mapa-texto h3 span{
+        font-size: 60px;
+    }
+    .mapa .mapa-texto p{
+        padding-top: 20px;
+        font-size: 18px;
+    }
+    .jugopromo .cuadro h1{
+        font-size: 1.5rem;
+    }
+    .jugopromo .cuadro div{
+        height: 450px;
+    }
+    .jugopromo .cuadro .etiqueta{
+        width: 320px;
+        top: 40%;
+    }
+    .jugopromo .cuadro .moneda{
+        width: 260px;
+        top: 35%;
+        padding-bottom: 30px;
+
+    }
+    .action h1{
+        font-size: 35px;
+    }
+    .action h2{
+        font-size: 55px;
+    }
+    .action h3{
+        font-size: 55px;
+    }
+}
+@media (max-width: 920px){
+    .Promoinf{
+        flex-direction: column;
+    }
+    .Promoinf .textoplay{
+        padding-left: 2.2rem;
+        justify-content: center;
+        align-items: center;
+        display: flexbox;
+    }
+    .Promoinf .textoplay img{
+        width: 70%;
+    }
+    .Promoinf .imagenplay{
+        max-width:80%;}
+
+    .pasos .cuadros{
+        padding: 40px 5% 0;
+        height: auto;
+    }
+    .pasos .cuadros p{
+        font-family: Arial, sans-serif;
+        font-size: 25px;
+        font-weight: 200;
+    }
+    .pasos .cuadros div{
+        height: 340px;
+        margin: 8px;
+    }
+    .pasos .cuadros h1{
+        font-size: 2.6rem;
+    }
+    .pasos .cuadros p{
+        font-size: 18px;
+    }
+    .mapa .mapa-texto{
+        width:auto;}
+    .mapa{
+        flex-direction: column;
+    }
+    .jugopromo .cuadro h1{
+        font-size: 1.5rem;
+    }
+    .jugopromo .cuadro div{
+        height: 450px;
+    }
+    .jugopromo .cuadro .etiqueta{
+        width: 300px;
+        top: 30%;
+    }
+    .jugopromo .cuadro .moneda{
+        width: 240px;
+        top: 35%;
+        padding-bottom: 20px;
+
+    }
+    .action{
+        padding: 50px 10% 50px;
+    }
+    .action h1{
+        font-size: 30px;
+    }
+    .action h2{
+        font-size: 35px;
+    }
+    .action h3{
+        font-size: 25px;
+    }
+}
+@media (max-width:  700px){
+    .textpromo img{
+        background-color: #fff;
+        padding: 15px 20px 10px 20px;
+        border-radius: 20px 0px 0px 20px;
+        width: 150px;
+        position: fixed;
+        z-index: 999;
+        right: 0px;
+    }
+    .textpromo h1{
+        font-size: 25px;
+    }
+
+    .pasos .text-descripcion{
+        padding: 20px 5% 0;
+    }
+    .pasos .text-descripcion p{
+        font-size: 19px;
+    }
+    .pasos .cuadros{
+        flex-direction: column;
+
+    }
+    .pasos .cuadros div{
+        width: 80%;
+        height: 100%;
+
+    }
+
+    .pasos .text-descripcion h1{
+        font-size: 3rem;
+    }
+    .pasos .cuadros p{
+        font-size: 25px;
+        font-weight: 200;
+        text-align: center;
+        color: #612500;
+    }
+    .fecha{
+        font-size: 25px;
+    }
+}
+@media (max-width:585px){
+    .Promoinf .textoplay{
+        margin: none;
+        padding: 0%;
+    }
+    .Promoinf .textoplay h1{
+        font-size: 5rem;
+    }
+    .Promoinf .textoplay h3{
+        margin-top: 20px;
+        font-size: 1.6rem;
+    }
+    .Promoinf .textoplay h4{
+        font-size: 2.5rem;
+    }
+    .jugopromo .cuadro {
+        flex-direction: column;
+
+    }
+    .pasos .text-descripcion h1{
+        font-size: 2.4rem;
+
+    }
+    .jugos h1{
+        font-size: 55px;
+    }
+    .jugos p{
+        font-size: 19px;
+    }
+    .jugos div img{
+        padding-top: 15px;
+        width: 100%;
+
+    }
+}
