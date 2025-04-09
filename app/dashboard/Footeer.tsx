@@ -13,8 +13,8 @@ export default function Footer() {
           <h3 className="font-bold mb-3">Industrias CIN</h3>
           <ul className="space-y-1">
             <li><Link href="#">Mi Cuenta</Link></li>
-            <li><Link href="#">Seguimiento en línea</Link></li>
-            <li><Link href="#">Ofertas</Link></li>
+            <li><Link href="https://wa.me/59170700290">Seguimiento en línea</Link></li>
+            <li><Link href="/dashboard/invoices">Ofertas</Link></li>
           </ul>
         </div>
 
@@ -41,10 +41,15 @@ export default function Footer() {
         <div>
           <h3 className="font-medium   mb-3">Síguenos</h3>
           <div className="flex space-x-4 text-lg">
+          <a href="https://www.facebook.com/industriascin.bo/?locale=es_LA" target="_blank" rel="noopener noreferrer">
             <FaFacebookF className="cursor-pointer hover:text-black transition" />
+          </a>
+          <a href="https://wa.me/59170700290" target="_blank" rel="noopener noreferrer">
             <FaWhatsapp className="cursor-pointer hover:text-black transition" />
+         </a>
+            <a href="https://www.tiktok.com/@industriascin" target="_blank" rel="noopener noreferrer">
             <FaTiktok className="cursor-pointer hover:text-black transition" />
-            <FaYoutube className="cursor-pointer hover:text-black transition" />
+         </a> 
           </div>
         </div>
       </div>

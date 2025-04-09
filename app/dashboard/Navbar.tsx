@@ -17,22 +17,29 @@ export default function Navbar() {
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState(''); // Se inicializa vacío
   const [mostrarAlerta, setMostrarAlerta] = useState(true); // Estado para mostrar alerta al cargar
+  const [isClient, setIsClient] = useState(false); // Estado para verificar si es el cliente
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   useEffect(() => {
+    setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
+
     fetch('/api/ciudades')
       .then(res => res.json())
       .then(data => setCiudades(data))
       .catch(err => console.error('Error al obtener ciudades:', err));
-  }, [ciudadSeleccionada]);
+  }, []); // Solo se carga una vez al montar el componente
 
-  // ✅ Tipado explícito del parámetro
   const handleSeleccionCiudad = (nombre: string) => {
     setCiudadSeleccionada(nombre);
     setMostrarDropdown(false);
     setMostrarAlerta(false); // Se oculta la alerta cuando se selecciona una ciudad
   };
+
+  // No renderizamos contenido específico hasta que estemos en el cliente
+  if (!isClient) {
+    return null; // Devolvemos null para evitar el desajuste durante la hidratación
+  }
 
   return (
     <nav className="bg-orange-500 px-6 py-2 relative z-50">
@@ -81,40 +88,6 @@ export default function Navbar() {
           <FaShoppingCart className="text-lg cursor-pointer" />
         </div>
 
-       {/* Modal de alerta si no se ha seleccionado la ciudad */}
-{mostrarAlerta && ciudadSeleccionada === '' && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 shadow-lg w-80 text-center">
-      <h2 className="text-lg font-semibold mb-4">Selecciona tu ubicación</h2>
-      <select
-        className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-        onChange={(e) => handleSeleccionCiudad(e.target.value)}
-        value={ciudadSeleccionada} // Bind value to ensure it updates correctly
-      >
-        <option value="" disabled>-- Elige tu ciudad --</option>
-        {ciudades.map((ciudad) => (
-          <option key={ciudad.id_ciudad} value={ciudad.nombre_ciudad}>
-            {ciudad.nombre_ciudad}
-          </option>
-        ))}
-      </select>
-      <button
-        className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-        onClick={() => {
-          if (ciudadSeleccionada !== '') {
-            // Save logic goes here, such as calling a save function
-            setMostrarAlerta(false); // Close the alert after saving
-          }
-        }}
-        disabled={ciudadSeleccionada === ''} // Disable the button if no city is selected
-      >
-        Guardar
-      </button>
-    </div>
-  </div>
-)}
-
-
         {/* Menú hamburguesa para móviles */}
         <div className="block lg:hidden">
           <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
@@ -141,8 +114,9 @@ export default function Navbar() {
             <Link href="/dashboard/contactanos">Contáctanos</Link>
           </li>
           <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
-            ¿Quienes somos?
+            <Link href="/dashboard/quienes_somos">Sobre Nosotros</Link>
           </li>
+        
           <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
             Añadir
           </li>
@@ -164,6 +138,29 @@ export default function Navbar() {
           <FaSearch className="absolute right-3 top-3 text-gray-400" />
         </div>
       </div>
+
+      {/* Modal de alerta si no se ha seleccionado la ciudad */}
+      {mostrarAlerta && ciudadSeleccionada === '' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 shadow-lg w-96 max-w-sm text-center space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-800">¡Selecciona tu ubicación!</h2>
+            <p className="text-gray-600 text-sm mb-4">Para continuar, por favor selecciona tu ciudad de la lista.</p>
+            
+            <select
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              onChange={(e) => handleSeleccionCiudad(e.target.value)}
+              value={ciudadSeleccionada}
+            >
+              <option value="" disabled>-- Elige tu ciudad --</option>
+              {ciudades.map((ciudad) => (
+                <option key={ciudad.id_ciudad} value={ciudad.nombre_ciudad}>
+                  {ciudad.nombre_ciudad}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
