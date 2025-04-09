@@ -62,7 +62,7 @@ export default function Promotions() {
             </section>
             <section className="mapa">
                 <div className="mapa-texto">
-                    <h1 id="textfon" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>36 puntos</h1>
+                    <h1 id="textfon" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>7 puntos</h1>
                     <h2 id="textfon"style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>AUTORIZADOS</h2>
                     <h3 id="textfon"style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>Busca el más cercano <br/><span>DE TU ZONA</span></h3>
                     <p style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700 }}>Tenemos anforas en la ciudad de Cochabamba, Centro, Sacaba, Quillacollo y mucho más. revisalo en
