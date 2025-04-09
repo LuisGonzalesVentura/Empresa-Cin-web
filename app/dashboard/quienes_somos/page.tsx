@@ -2,7 +2,7 @@
 import React from 'react';
 
 const QuienesSomos = () => {
-  return <div>Contenido de la página Quiénes Somos</div>;
+  return <div>Contenidoooo de la página Quiénes Somos</div>;
 };
 
 export default QuienesSomos;
