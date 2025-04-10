@@ -118,8 +118,9 @@ export default function Navbar() {
           </li>
         
           <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
-            Añadir
+            <Link href="/dashboard/anadir">Añadir productos</Link>
           </li>
+        
           <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
             Modificar
           </li>
