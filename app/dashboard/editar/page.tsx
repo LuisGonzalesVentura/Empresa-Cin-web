@@ -4,19 +4,19 @@ export default function SeleccionProducto() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center pt-16 px-4">
       <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold text-orange-600 mb-6">Añadir Productos</h1>
-        <p className="text-gray-700 mb-8">Selecciona la categoría del producto que deseas añadir.</p>
+        <h1 className="text-3xl font-bold text-orange-600 mb-6">Editar Productos</h1>
+        <p className="text-gray-700 mb-8">Selecciona la categoría del producto que deseas editar.</p>
 
         <div className="flex flex-col space-y-4">
-          <Link href="/dashboard/anadir/jugos" passHref>
+          <Link href="/dashboard/editar/editar_jugo" passHref>
             <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
-              Añadir Jugos
+              Editar Jugos
             </button>
           </Link>
 
-          <Link href="/dashboard/anadir/hervidos" passHref>
+          <Link href="/dashboard/editar/editar_jugo" passHref>
             <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
-              Añadir Hervidos
+              Editar Hervidos
             </button>
           </Link>
         </div>
@@ -24,3 +24,4 @@ export default function SeleccionProducto() {
     </div>
   );
 }
+

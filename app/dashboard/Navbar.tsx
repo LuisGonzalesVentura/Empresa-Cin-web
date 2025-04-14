@@ -9,31 +9,42 @@ import { useState, useEffect } from 'react';
 interface Ciudad {
   id_ciudad: number;
   nombre_ciudad: string;
+  
 }
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
-  const [ciudadSeleccionada, setCiudadSeleccionada] = useState(''); // Se inicializa vacío
-  const [mostrarAlerta, setMostrarAlerta] = useState(true); // Estado para mostrar alerta al cargar
   const [isClient, setIsClient] = useState(false); // Estado para verificar si es el cliente
+  const [mostrarAlerta, setMostrarAlerta] = useState(false);
+  const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   useEffect(() => {
     setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
+// ✅ Esto ya se ejecuta sólo en el cliente
+const ciudadGuardada = localStorage.getItem("ciudadSeleccionada");
+if (ciudadGuardada) {
+  setCiudadSeleccionada(ciudadGuardada);
+}
 
-    fetch('/api/ciudades')
-      .then(res => res.json())
-      .then(data => setCiudades(data))
-      .catch(err => console.error('Error al obtener ciudades:', err));
+fetch("/api/ciudades")
+  .then((res) => res.json())
+  .then((data) => setCiudades(data))
+  .catch((err) => console.error("Error al obtener ciudades:", err));
+
+  
   }, []); // Solo se carga una vez al montar el componente
 
   const handleSeleccionCiudad = (nombre: string) => {
+
     setCiudadSeleccionada(nombre);
     setMostrarDropdown(false);
     setMostrarAlerta(false); // Se oculta la alerta cuando se selecciona una ciudad
+    setCiudadSeleccionada(nombre); // Cambia el estado local
+    localStorage.setItem('ciudadSeleccionada', nombre); // Guarda en el localStorage
   };
 
   // No renderizamos contenido específico hasta que estemos en el cliente
@@ -59,29 +70,27 @@ export default function Navbar() {
 
         {/* Iconos de ubicación y usuario, carrito */}
         <div className="flex items-center space-x-4 text-white relative">
-          {/* Ciudad y dropdown */}
-          <div className="flex flex-col relative">
-            <div 
-              className="flex items-center space-x-1 cursor-pointer"
-              onClick={() => setMostrarDropdown(!mostrarDropdown)}
-            >
-              <FaMapMarkerAlt />
-              <span className="text-sm">{ciudadSeleccionada || 'Selecciona tu ubicación'}</span>
-            </div>
 
-            {mostrarDropdown && (
-              <div className="absolute top-7 left-0 mt-1 bg-white text-black rounded-md shadow-lg w-40 z-50">
-                {ciudades.map((ciudad) => (
-                  <div
-                    key={ciudad.id_ciudad}
-                    onClick={() => handleSeleccionCiudad(ciudad.nombre_ciudad)}
-                    className="px-3 py-2 hover:bg-gray-200 cursor-pointer"
-                  >
-                    {ciudad.nombre_ciudad}
-                  </div>
-                ))}
-              </div>
-            )}
+
+
+          {/* Ciudad y botón para seleccionar ubicación */}
+<div className="flex flex-col relative">
+
+
+  
+  <div 
+    className="flex items-center space-x-1 cursor-pointer"
+    onClick={() => setMostrarAlerta(true)} // Siempre muestra la alerta
+  >
+    <FaMapMarkerAlt />
+    <span className="text-sm">
+      {ciudadSeleccionada || 'Selecciona tu ubicación'}
+    </span>
+  </div>
+
+
+
+
           </div>
 
           <FaUser className="text-lg cursor-pointer" />
@@ -122,9 +131,6 @@ export default function Navbar() {
           </li>
         
           <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
-            Modificar
-          </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
             Pedidos
           </li>
         </ul>
@@ -140,28 +146,55 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Modal de alerta si no se ha seleccionado la ciudad */}
-      {mostrarAlerta && ciudadSeleccionada === '' && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 shadow-lg w-96 max-w-sm text-center space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-800">¡Selecciona tu ubicación!</h2>
-            <p className="text-gray-600 text-sm mb-4">Para continuar, por favor selecciona tu ciudad de la lista.</p>
-            
-            <select
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              onChange={(e) => handleSeleccionCiudad(e.target.value)}
-              value={ciudadSeleccionada}
-            >
-              <option value="" disabled>-- Elige tu ciudad --</option>
-              {ciudades.map((ciudad) => (
-                <option key={ciudad.id_ciudad} value={ciudad.nombre_ciudad}>
-                  {ciudad.nombre_ciudad}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
+{/* Modal de alerta si no se ha seleccionado la ciudad */}
+{mostrarAlerta && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in px-4 sm:px-6 md:px-0">
+    <div className="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-sm sm:max-w-md md:max-w-lg text-center space-y-4 sm:space-y-6">
+
+      {/* Botón de cerrar (X) */}
+      <button
+        onClick={() => setMostrarAlerta(false)}
+        className="absolute top-3 right-3 text-gray-400 hover:text-orange-500 transition duration-200"
+        aria-label="Cerrar modal"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      {/* Icono de alerta */}
+      <div className="flex justify-center">
+        <svg className="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.702-1.14 1.132-2.052L13.132 4.948c-.526-.905-1.738-.905-2.264 0L4.95 16.948c-.57.912.078 2.052 1.132 2.052z" />
+        </svg>
+      </div>
+
+      <h2 className="text-lg sm:text-2xl font-bold text-gray-800">¡Selecciona tu ubicación!</h2>
+      <p className="text-gray-600 text-sm sm:text-base">
+        Para continuar, por favor selecciona tu ciudad de la lista.
+      </p>
+
+      <select
+        className="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
+        onChange={(e) => {
+          handleSeleccionCiudad(e.target.value);
+          setMostrarAlerta(false);
+          window.location.reload();
+        }}
+        value={ciudadSeleccionada}
+      >
+        <option value="" disabled>-- Elige tu ciudad --</option>
+        {ciudades.map((ciudad) => (
+          <option key={ciudad.id_ciudad} value={ciudad.nombre_ciudad}>
+            {ciudad.nombre_ciudad}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+)}
+
+
     </nav>
   );
 }
