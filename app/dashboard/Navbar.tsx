@@ -148,8 +148,8 @@ fetch("/api/ciudades")
 
 {/* Modal de alerta si no se ha seleccionado la ciudad */}
 {mostrarAlerta && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in px-4 sm:px-6 md:px-0">
-    <div className="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-sm sm:max-w-md md:max-w-lg text-center space-y-4 sm:space-y-6">
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in px-4 sm:px-0">
+    <div className="relative bg-white rounded-2xl p-5 sm:p-8 shadow-xl w-full max-w-md text-center space-y-4 sm:space-y-6">
 
       {/* Botón de cerrar (X) */}
       <button
@@ -175,7 +175,7 @@ fetch("/api/ciudades")
       </p>
 
       <select
-        className="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
         onChange={(e) => {
           handleSeleccionCiudad(e.target.value);
           setMostrarAlerta(false);

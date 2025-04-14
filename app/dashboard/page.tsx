@@ -160,54 +160,96 @@ fetch('/api/productos/hervidos')
 <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
   {hervidos
     .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
-    .map((producto) => (
-      <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-        <img
-  src={`/uploads/${producto.foto}`}
-  alt="Producto"
-  className="w-full h-auto"
-/>
+    .map((producto) => {
+      const precioFinal = producto.descuento > 0
+        ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
+        : producto.precio;
 
-        <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
-        {producto.descuento > 0 && (
-          <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-            {`Descuento: ${producto.descuento}%`}
-          </div>
-        )}
-        <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${producto.precio}`}</p>
-        <button className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg">
-          Comprar
-        </button>
-      </div>
-    ))}
+      return (
+        <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+          <img
+            src={`/uploads/${producto.foto}`}
+            alt="Producto"
+            className="w-full h-auto"
+          />
+
+          <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+
+          {producto.descuento > 0 && (
+            <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+              {`Descuento: ${producto.descuento}%`} 
+              <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
+            </div>
+          )}
+
+          <p className="text-green-600 font-bold text-xl mt-2">
+            {`Bs. ${precioFinal}`}
+          </p>
+
+          <button className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg">
+            Comprar
+          </button>
+        </div>
+      );
+    })}
 </section>
 
-      {/* Categoría: Jugos */}
-      <h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-        {jugos
-          .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
-          .map((producto) => (
-            <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-              <img
-  src={`/uploads/${producto.foto}`}
-  alt="Producto"
-  className="w-full h-auto"
-/>
 
-              <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
-              {producto.descuento > 0 && (
-                <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-                  {`Descuento: ${producto.descuento}%`}
-                </div>
-              )}
-              <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${producto.precio}`}</p>
-              <button className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg">
-                Comprar
-              </button>
+
+
+
+
+
+ {/* Banner inferior */}
+ <section className="mt-12">
+         <Image
+           src="/cinta publicitaria 1.png" // Cambia por tu banner inferior real
+           alt="Coleccionables"
+           width={1400}
+           height={200}
+           className="rounded-lg w-full object-cover"
+         />
+       </section>
+ 
+      {/* Categoría: Jugos */}
+<h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
+<section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
+  {jugos
+    .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
+    .map((producto) => {
+      const precioFinal = producto.descuento > 0
+        ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
+        : producto.precio;
+
+      return (
+        <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+          <img
+            src={`/uploads/${producto.foto}`}
+            alt="Producto"
+            className="w-full h-auto"
+          />
+
+          <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+
+          {producto.descuento > 0 && (
+            <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+              {`Descuento: ${producto.descuento}%`} 
+              <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
             </div>
-          ))}
-      </section>
+          )}
+
+          <p className="text-green-600 font-bold text-xl mt-2">
+            {`Bs. ${precioFinal}`}
+          </p>
+
+          <button className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg">
+            Comprar
+          </button>
+        </div>
+      );
+    })}
+</section>
+
     </main>
   );
 }

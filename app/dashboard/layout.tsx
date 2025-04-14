@@ -9,10 +9,11 @@ export const metadata = {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Navbar fijo en la parte superior */}
       <Navbar />
-      <main className="flex-grow">
-        {children}
-      </main>
+      
+      {children}
+      
       <Footer />
     </div>
   );
