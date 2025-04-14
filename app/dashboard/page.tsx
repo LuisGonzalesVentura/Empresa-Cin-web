@@ -163,8 +163,7 @@ fetch('/api/productos/hervidos')
     .map((producto) => (
       <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
         <Image
-          src={producto.foto ? `/uploads/${producto.foto}` : '/sin-imagen.png'}
-          alt={producto.nombre_producto}
+                src={`/uploads/${producto.foto}`} alt={producto.nombre_producto}
           width={200}
           height={250}
           className="mx-auto"
@@ -191,8 +190,8 @@ fetch('/api/productos/hervidos')
           .map((producto) => (
             <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
               <Image
-                src={producto.foto ? `/uploads/${producto.foto}` : '/sin-imagen.png'}
-                alt={producto.nombre_producto}
+                src={`/uploads/${producto.foto}`} alt={producto.nombre_producto}
+
                 width={200}
                 height={250}
                 className="mx-auto"
