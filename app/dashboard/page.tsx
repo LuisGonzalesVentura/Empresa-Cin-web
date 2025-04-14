@@ -162,12 +162,12 @@ fetch('/api/productos/hervidos')
     .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
     .map((producto) => (
       <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-        <Image
-                src={`/uploads/${producto.foto}`} alt={producto.nombre_producto}
-          width={200}
-          height={250}
-          className="mx-auto"
-        />
+        <img
+  src={`/uploads/${producto.foto}`}
+  alt="Producto"
+  className="w-full h-auto"
+/>
+
         <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
         {producto.descuento > 0 && (
           <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
@@ -189,13 +189,12 @@ fetch('/api/productos/hervidos')
           .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
           .map((producto) => (
             <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-              <Image
-                src={`/uploads/${producto.foto}`} alt={producto.nombre_producto}
+              <img
+  src={`/uploads/${producto.foto}`}
+  alt="Producto"
+  className="w-full h-auto"
+/>
 
-                width={200}
-                height={250}
-                className="mx-auto"
-              />
               <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
               {producto.descuento > 0 && (
                 <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
