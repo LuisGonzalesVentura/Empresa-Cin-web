@@ -99,10 +99,7 @@ const agregarAlCarrito = (producto: Producto) => {
     localStorage.setItem('carrito', JSON.stringify(carritoExistente));
 
     // 🔥 Disparar evento personalizado para actualizar el contador en el navbar u otros componentes
-    const evento = new Event('carritoActualizado');
-    window.dispatchEvent(evento);
-
-    mostrarAlerta(`Producto añadido al carrito. Se han añadido ${cantidad} unidades.`, 'success');
+   
     window.location.reload();
 
   });
