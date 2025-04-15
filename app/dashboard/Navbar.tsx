@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation'; // Importa el hook useRouter de Next.js
 import { FaSearch, FaMapMarkerAlt, FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +11,13 @@ interface Ciudad {
   nombre_ciudad: string;
   
 }
+interface ProductoCarrito {
+  id_producto: number;
+  nombre_producto: string;
+  cantidad: number;
+  precio: number;
+  foto: string;
+}
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,11 +26,14 @@ export default function Navbar() {
   const [isClient, setIsClient] = useState(false); // Estado para verificar si es el cliente
   const [mostrarAlerta, setMostrarAlerta] = useState(false);
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
+  const [cantidadTotal, setCantidadTotal] = useState(0); // Estado del carrito
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
+
+setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
 // ✅ Esto ya se ejecuta sólo en el cliente
 const ciudadGuardada = localStorage.getItem("ciudadSeleccionada");
 if (ciudadGuardada) {
@@ -35,7 +45,39 @@ fetch("/api/ciudades")
   .then((data) => setCiudades(data))
   .catch((err) => console.error("Error al obtener ciudades:", err));
 
-  
+  const carritoLocal = localStorage.getItem('carrito');
+  if (carritoLocal) {
+    try {
+      const carrito: ProductoCarrito[] = JSON.parse(carritoLocal);
+      const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+      setCantidadTotal(total);
+    } catch (error) {
+      console.error("Error al leer el carrito:", error);
+    }
+  }
+ // ✅ Escuchar cambios en el localStorage
+ const handleStorageChange = () => {
+  const carritoActualizado = localStorage.getItem('carrito');
+  if (carritoActualizado) {
+    try {
+      const carrito: ProductoCarrito[] = JSON.parse(carritoActualizado);
+      const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+      setCantidadTotal(total);
+    } catch (error) {
+      console.error("Error al actualizar el carrito:", error);
+    }
+  } else {
+    setCantidadTotal(0);
+    
+  }
+};
+
+window.addEventListener('storage', handleStorageChange);
+
+return () => {
+  window.removeEventListener('storage', handleStorageChange);
+};
+
   }, []); // Solo se carga una vez al montar el componente
 
   const handleSeleccionCiudad = (nombre: string) => {
@@ -46,7 +88,10 @@ fetch("/api/ciudades")
     setCiudadSeleccionada(nombre); // Cambia el estado local
     localStorage.setItem('ciudadSeleccionada', nombre); // Guarda en el localStorage
   };
-
+  const handleCarritoClick = () => {
+    // Redirige a /carrito/detalle cuando el ícono de carrito es clickeado
+    router.push('/dashboard/carrito');
+  };
   // No renderizamos contenido específico hasta que estemos en el cliente
   if (!isClient) {
     return null; // Devolvemos null para evitar el desajuste durante la hidratación
@@ -68,34 +113,43 @@ fetch("/api/ciudades")
           </Link>
         </div>
 
-        {/* Iconos de ubicación y usuario, carrito */}
-        <div className="flex items-center space-x-4 text-white relative">
+      {/* Iconos de ubicación, usuario y carrito */}
+<div className="flex items-center space-x-4 text-white relative">
 
-
-
-          {/* Ciudad y botón para seleccionar ubicación */}
+{/* Ciudad y botón para seleccionar ubicación */}
 <div className="flex flex-col relative">
-
-
-  
   <div 
     className="flex items-center space-x-1 cursor-pointer"
-    onClick={() => setMostrarAlerta(true)} // Siempre muestra la alerta
+    onClick={() => setMostrarAlerta(true)} // Muestra el selector de ciudad
   >
     <FaMapMarkerAlt />
     <span className="text-sm">
       {ciudadSeleccionada || 'Selecciona tu ubicación'}
     </span>
   </div>
+</div>
+
+{/* Icono de usuario */}
+<FaUser className="text-lg cursor-pointer" />
+
+{/* Icono de carrito */}
+<button
+      onClick={handleCarritoClick}
+      className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
+    >
+      <FaShoppingCart className="text-2xl text-white" />
+
+      {cantidadTotal > 0 && (
+        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
+          {cantidadTotal}
+        </span>
+      )}
+    </button>
 
 
 
+</div>
 
-          </div>
-
-          <FaUser className="text-lg cursor-pointer" />
-          <FaShoppingCart className="text-lg cursor-pointer" />
-        </div>
 
         {/* Menú hamburguesa para móviles */}
         <div className="block lg:hidden">
@@ -146,6 +200,9 @@ fetch("/api/ciudades")
         </div>
       </div>
 
+
+
+
 {/* Modal de alerta si no se ha seleccionado la ciudad */}
 {mostrarAlerta && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in px-4 sm:px-0">
@@ -177,9 +234,14 @@ fetch("/api/ciudades")
       <select
         className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
         onChange={(e) => {
+          localStorage.removeItem('carrito');
+
           handleSeleccionCiudad(e.target.value);
           setMostrarAlerta(false);
           window.location.reload();
+
+
+
         }}
         value={ciudadSeleccionada}
       >
