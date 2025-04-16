@@ -20,6 +20,11 @@ interface ProductoCarrito {
 }
 
 export default function Navbar() {
+  const [busqueda, setBusqueda] = useState("");
+
+  const router = useRouter();
+
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
@@ -29,7 +34,6 @@ export default function Navbar() {
   const [cantidadTotal, setCantidadTotal] = useState(0); // Estado del carrito
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const router = useRouter();
 
   useEffect(() => {
 
@@ -92,6 +96,19 @@ return () => {
     // Redirige a /carrito/detalle cuando el ícono de carrito es clickeado
     router.push('/dashboard/carrito');
   };
+
+
+  const handleBuscar = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (busqueda.trim() !== "") {
+        // No previene el comportamiento por defecto
+  if (busqueda.trim() === "") return;
+      // Usamos router.push para cambiar la URL sin recargar la página
+      router.push(`/dashboard/filtrado_busqueda?query=${encodeURIComponent(busqueda)}`);
+    }
+  };
+  
+
   // No renderizamos contenido específico hasta que estemos en el cliente
   if (!isClient) {
     return null; // Devolvemos null para evitar el desajuste durante la hidratación
@@ -189,15 +206,29 @@ return () => {
           </li> */}
         </ul>
 
-        {/* Barra de búsqueda */}
-        <div className="relative w-full max-w-xs ml-auto mt-4 lg:mt-0">
-          <input
-            type="text"
-            placeholder="Busca algún producto"
-            className="w-full px-4 py-2 rounded-full shadow-md text-gray-700"
-          />
-          <FaSearch className="absolute right-3 top-3 text-gray-400" />
-        </div>
+   {/* Barra de búsqueda */}
+   <form 
+  action={`/dashboard/filtrado_busqueda`} 
+  method="GET" 
+  className="relative w-full max-w-xs ml-auto mt-4 lg:mt-0"
+>
+  <input
+    type="text"
+    name="query" // ¡Importante para que el valor se pase por la URL!
+    placeholder="Busca algún producto"
+    className="w-full px-4 py-2 rounded-full shadow-md text-gray-700"
+    value={busqueda}
+    onChange={(e) => setBusqueda(e.target.value)}
+  />
+  <button type="submit">
+    <FaSearch className="absolute right-3 top-3 text-gray-400" />
+  </button>
+</form>
+
+
+
+
+
       </div>
 
 
