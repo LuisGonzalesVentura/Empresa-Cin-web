@@ -360,6 +360,39 @@ if (cargando) {
     })}
 </section>
 
+
+{/* Sección de Beneficios */}
+<section className="bg-white py-12">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-center mb-8">CONOCE NUESTROS BENEFICIOS</h2>
+    <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 text-center">
+      {/* Beneficio 1 */}
+      <div className="flex flex-col items-center">
+        <img src="/icono1.png" alt="Icono 1" className="w-24 h-24 mb-4" />
+        <p className="font-semibold">
+          Regístrate y activa tu cuenta en <br />Cin Bolivia
+        </p>
+      </div>
+      {/* Beneficio 2 */}
+      <div className="flex flex-col items-center">
+        <img src="/icono2.png" alt="Icono 2" className="w-24 h-24 mb-4" />
+        <p className="font-semibold">
+          Revisa nuestro catálogo y <br />escoge tus productos
+        </p>
+      </div>
+      {/* Beneficio 3 */}
+      <div className="flex flex-col items-center">
+        <img src="/icono3.png" alt="Icono 3" className="w-24 h-24 mb-4" />
+        <p className="font-semibold">
+          Recibe tu pedido en la <br />puerta de tu casa
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
     </main>
   );
 }

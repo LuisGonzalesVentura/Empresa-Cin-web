@@ -214,7 +214,7 @@ if (cargando) {
 {/* Título de categoría */}
 <div className="flex items-center justify-between mb-6 flex-wrap">
       <h2 className="text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
-        Jugos
+        Hervidos
       </h2>
       <Link href="/dashboard" passHref>
         <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-lg text-lg flex items-center space-x-2 transition duration-300">
