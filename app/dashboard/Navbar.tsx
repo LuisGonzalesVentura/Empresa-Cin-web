@@ -180,13 +180,13 @@ return () => {
             <Link href="/dashboard/quienes_somos">Sobre Nosotros</Link>
           </li>
         
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+       {/*/ <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
             <Link href="/dashboard/anadir">Añadir productos</Link>
           </li>
         
           <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
             Pedidos
-          </li>
+          </li> */}
         </ul>
 
         {/* Barra de búsqueda */}
