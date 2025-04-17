@@ -73,31 +73,37 @@ export default function Page() {
 
   
 
-// Agregar producto al carrito
-const agregarAlCarrito = (producto: Producto) => {
-  mostrarCantidadInput('¿Cuántos productos deseas añadir?', (cantidad) => {
-    if (isNaN(cantidad) || cantidad <= 0) {
-      mostrarAlerta('Por favor, ingresa una cantidad válida.', 'error');
-      return;
-    }
 
-    const carritoExistente = JSON.parse(localStorage.getItem('carrito') || '[]');
-    const productoExistente = carritoExistente.find((p: any) => p.id_producto === producto.id_producto);
-
-    if (productoExistente) {
-      productoExistente.cantidad += cantidad;
-    } else {
-      carritoExistente.push({ ...producto, cantidad });
-    }
-
-    localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-
-    // 🔥 Disparar evento personalizado para actualizar el contador en el navbar u otros componentes
-    
-    window.location.reload();
-
-  });
-};
+  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo') => {
+    mostrarCantidadInput('¿Cuántos productos deseas añadir?', (cantidad: number) => {
+      if (isNaN(cantidad) || cantidad <= 0) {
+        mostrarAlerta('Por favor, ingresa una cantidad válida.', 'error');
+        return;
+      }
+  
+      const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
+  
+      // Buscamos si ya existe un producto con ese id Y de ese origen
+      const productoExistente = carritoExistente.find(p => 
+        p.id_producto === producto.id_producto && p.origen === origen
+      );
+  
+      if (productoExistente) {
+        productoExistente.cantidad += cantidad;
+      } else {
+        carritoExistente.push({ ...producto, cantidad, origen });
+      }
+  
+      localStorage.setItem('carrito', JSON.stringify(carritoExistente));
+  
+      const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
+        detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
+      });
+  
+      window.dispatchEvent(eventoCarritoActualizado);
+      mostrarAlerta('Producto añadido al carrito correctamente.', 'success');
+    });
+  };
 
 // Función para mostrar alerta bonita
 const mostrarAlerta = (mensaje: string, tipo: 'success' | 'error') => {
@@ -222,52 +228,54 @@ if (cargando) {
      {/* Categoría: Hervidos */}
 <h2 className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
 <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-  {hervidos
-    .filter(
-      (producto) =>
-        producto.nombre_ciudad === ciudadSeleccionada &&
-        producto.descuento > 0
-    )
-    .map((producto) => {
-      const precioFinal =
-        producto.descuento > 0
-          ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
-          : producto.precio;
-
-      return (
-        <div
-          key={producto.id_producto}
-          className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center"
-        >
-          <img
-            src={`/uploads/${producto.foto}`}
-            alt="Producto"
-            className="w-full h-auto"
-          />
-
-          <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
-
-          {producto.descuento > 0 && (
+  {hervidos.filter(
+    (producto) =>
+      producto.nombre_ciudad === ciudadSeleccionada &&
+      producto.descuento > 0
+  ).length === 0 ? (
+    <div className="col-span-full text-center text-gray-500 text-xl font-semibold">
+      Pronto habrá ofertas en hervidos 
+    </div>
+  ) : (
+    hervidos
+      .filter(
+        (producto) =>
+          producto.nombre_ciudad === ciudadSeleccionada &&
+          producto.descuento > 0
+      )
+      .map((producto) => {
+        const precioFinal = (
+          producto.precio -
+          (producto.precio * producto.descuento) / 100
+        ).toFixed(2);
+        return (
+          <div
+            key={producto.id_producto}
+            className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center"
+          >
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt="Producto"
+              className="w-full h-auto"
+            />
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
             <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
               {`Descuento: ${producto.descuento}%`}
               <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
             </div>
-          )}
-
-          <p className="text-green-600 font-bold text-xl mt-2">
-            {`Bs. ${precioFinal}`}
-          </p>
-
-          <button
-            className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-            onClick={() => agregarAlCarrito(producto)}
-          >
-            Añadir al carrito
-          </button>
-        </div>
-      );
-    })}
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
+            <button
+              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+              onClick={() => agregarAlCarrito(producto, 'hervido')}
+            >
+              Añadir al carrito
+            </button>
+          </div>
+        );
+      })
+  )}
 </section>
+
 
 
 
@@ -288,52 +296,61 @@ if (cargando) {
      {/* Categoría: Jugos */}
 <h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
 <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-  {jugos
-    .filter(
-      (producto) =>
-        producto.nombre_ciudad === ciudadSeleccionada &&
-        producto.descuento > 0
-    )
-    .map((producto) => {
-      const precioFinal =
-        producto.descuento > 0
-          ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
-          : producto.precio;
+  {jugos.filter(
+    (producto) =>
+      producto.nombre_ciudad === ciudadSeleccionada &&
+      producto.descuento > 0
+  ).length === 0 ? (
+    <div className="col-span-full text-center text-gray-500 text-xl font-semibold">
+       Pronto habrá ofertas en jugos 
+    </div>
+  ) : (
+    jugos
+      .filter(
+        (producto) =>
+          producto.nombre_ciudad === ciudadSeleccionada &&
+          producto.descuento > 0
+      )
+      .map((producto) => {
+        const precioFinal = (
+          producto.precio -
+          (producto.precio * producto.descuento) / 100
+        ).toFixed(2);
 
-      return (
-        <div
-          key={producto.id_producto}
-          className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center"
-        >
-          <img
-            src={`/uploads/${producto.foto}`}
-            alt="Producto"
-            className="w-full h-auto"
-          />
+        return (
+          <div
+            key={producto.id_producto}
+            className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center"
+          >
+               <img
+              src={`/uploads/${producto.foto}`}
+              alt="Producto"
+              className="w-full h-auto"
+            />
 
-          <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
 
-          {producto.descuento > 0 && (
             <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-              {`Descuento: ${producto.descuento}%`} 
+              {`Descuento: ${producto.descuento}%`}
               <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
             </div>
-          )}
 
-          <p className="text-green-600 font-bold text-xl mt-2">
-            {`Bs. ${precioFinal}`}
-          </p>
+            <p className="text-green-600 font-bold text-xl mt-2">
+              {`Bs. ${precioFinal}`}
+            </p>
 
-          <button
-            className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-            onClick={() => agregarAlCarrito(producto)}
-          >
-            Añadir al carrito
-          </button>
-        </div>
-      );
-    })}
+            <button
+              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+              onClick={() => agregarAlCarrito(producto, 'jugo')}
+            >
+              Añadir al carrito
+            </button>
+          </div>
+        );
+      })
+  )}
 </section>
+
 
 {/* Sección de Beneficios */}
 <section className="bg-white py-12">

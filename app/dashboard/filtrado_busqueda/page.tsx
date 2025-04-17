@@ -65,31 +65,37 @@ export default function FiltradoBusqueda() {
   }, [query, ciudadSeleccionada]); // Reejecutar cuando query o ciudad seleccionada cambian
 
 
-  // Agregar producto al carrito
-const agregarAlCarrito = (producto: Producto) => {
-  mostrarCantidadInput('¿Cuántos productos deseas añadir?', (cantidad) => {
-    if (isNaN(cantidad) || cantidad <= 0) {
-      mostrarAlerta('Por favor, ingresa una cantidad válida.', 'error');
-      return;
-    }
-
-    const carritoExistente = JSON.parse(localStorage.getItem('carrito') || '[]');
-    const productoExistente = carritoExistente.find((p: any) => p.id_producto === producto.id_producto);
-
-    if (productoExistente) {
-      productoExistente.cantidad += cantidad;
-    } else {
-      carritoExistente.push({ ...producto, cantidad });
-    }
-
-    localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-
-    // 🔥 Disparar evento personalizado para actualizar el contador en el navbar u otros componentes
-    
-    window.location.reload();
-
-  });
-};
+  
+  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo') => {
+    mostrarCantidadInput('¿Cuántos productos deseas añadir?', (cantidad: number) => {
+      if (isNaN(cantidad) || cantidad <= 0) {
+        mostrarAlerta('Por favor, ingresa una cantidad válida.', 'error');
+        return;
+      }
+  
+      const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
+  
+      // Buscamos si ya existe un producto con ese id Y de ese origen
+      const productoExistente = carritoExistente.find(p => 
+        p.id_producto === producto.id_producto && p.origen === origen
+      );
+  
+      if (productoExistente) {
+        productoExistente.cantidad += cantidad;
+      } else {
+        carritoExistente.push({ ...producto, cantidad, origen });
+      }
+  
+      localStorage.setItem('carrito', JSON.stringify(carritoExistente));
+  
+      const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
+        detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
+      });
+  
+      window.dispatchEvent(eventoCarritoActualizado);
+      mostrarAlerta('Producto añadido al carrito correctamente.', 'success');
+    });
+  };
 // Función para mostrar alerta bonita
 const mostrarAlerta = (mensaje: string, tipo: 'success' | 'error') => {
   const alerta = document.createElement('div');
@@ -241,11 +247,11 @@ if (cargando) {
                 </p>
 
                 <button
-                  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-                  onClick={() => agregarAlCarrito(producto)}
-                >
-                  Añadir al carrito
-                </button>
+  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+  onClick={() => agregarAlCarrito(producto, 'hervido')}
+>
+  Añadir al carrito
+</button>
               </div>
             );
           })
@@ -287,11 +293,11 @@ if (cargando) {
                     </p>
 
                     <button
-                      className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-                      onClick={() => agregarAlCarrito(producto)}
-                    >
-                      Añadir al carrito
-                    </button>
+  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+  onClick={() => agregarAlCarrito(producto, 'jugo')}
+>
+  Añadir al carrito
+</button>
                   </div>
                 );
               })}

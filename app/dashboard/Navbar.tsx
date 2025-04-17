@@ -59,8 +59,15 @@ fetch("/api/ciudades")
       console.error("Error al leer el carrito:", error);
     }
   }
- // ✅ Escuchar cambios en el localStorage
- const handleStorageChange = () => {
+ // 🔄 Evento de actualización del carrito desde otras partes de la app
+ const handleCarritoActualizado = (e: any) => {
+  const cantidadTotal = e.detail.cantidadTotal;
+  setCantidadTotal(cantidadTotal);
+};
+window.addEventListener('carritoActualizado', handleCarritoActualizado);
+
+// 🧠 Evento de cambio en el localStorage (en caso de que otra pestaña lo modifique)
+const handleStorageChange = () => {
   const carritoActualizado = localStorage.getItem('carrito');
   if (carritoActualizado) {
     try {
@@ -72,18 +79,17 @@ fetch("/api/ciudades")
     }
   } else {
     setCantidadTotal(0);
-    
   }
 };
-
 window.addEventListener('storage', handleStorageChange);
 
+// 🧹 Cleanup
 return () => {
   window.removeEventListener('storage', handleStorageChange);
+  window.removeEventListener('carritoActualizado', handleCarritoActualizado);
 };
 
-  }, []); // Solo se carga una vez al montar el componente
-
+}, []);
   const handleSeleccionCiudad = (nombre: string) => {
 
     setCiudadSeleccionada(nombre);
