@@ -209,7 +209,7 @@ return () => {
       <Link href="/dashboard/contactanos">Contáctanos</Link>
     </li>
     <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/quienes_somos">Sobre Nosotros</Link>
+      <Link href="/dashboard/quienes_somos">Quienes Somos</Link>
     </li>
   </ul>
 

@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface Producto {
   id_producto: number;
@@ -261,9 +262,11 @@ if (cargando) {
               className="w-full h-100 object-cover"
             />
             <div className="p-4 text-center">
-              <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
-                Ver más
-              </button>
+            <Link href="/dashboard/hervidos">
+  <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
+    Ver más
+  </button>
+</Link>
             </div>
           </div>
         ))}
@@ -358,7 +361,7 @@ if (cargando) {
 
           <button
   className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-  onClick={() => agregarAlCarrito(producto, 'jugo')} // 👈 o 'jugo'
+  onClick={() => agregarAlCarrito(producto, 'jugo')} //  'jugo'
 >
   Añadir al carrito
 </button>

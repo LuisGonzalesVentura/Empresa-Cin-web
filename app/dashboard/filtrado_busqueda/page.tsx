@@ -217,7 +217,6 @@ if (cargando) {
 
 
 
-      <h2 className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
 
       <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
         {filtrados.length > 0 ? (
@@ -263,7 +262,6 @@ if (cargando) {
       {/* Categoría Jugos */}
       {jugos.filter(j => j.nombre_ciudad === ciudadSeleccionada).length > 0 && (
         <>
-          <h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
           <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
             {jugos
               .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada)
