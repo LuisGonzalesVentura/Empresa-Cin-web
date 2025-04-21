@@ -10,11 +10,13 @@ export const metadata = {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar fijo en la parte superior */}
       <Navbar />
-      <CarritoProvider>
 
-      {children}
+      <CarritoProvider>
+      <main className="flex-1 pt-24 sm:pt-20 md:pt-32"> {/* Ajusta padding en dispositivos móviles y más grandes */}
+  {children}
+</main>
+
       </CarritoProvider>
 
       <Footer />

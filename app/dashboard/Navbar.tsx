@@ -20,12 +20,10 @@ interface ProductoCarrito {
 }
 
 export default function Navbar() {
-  const [busqueda, setBusqueda] = useState("");
-
-  const router = useRouter();
-
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+  const router = useRouter();
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [isClient, setIsClient] = useState(false); // Estado para verificar si es el cliente
@@ -33,7 +31,16 @@ export default function Navbar() {
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
   const [cantidadTotal, setCantidadTotal] = useState(0); // Estado del carrito
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+// Función para alternar el estado del menú
+const toggleMenu = () => {
+  setIsMenuOpen(!isMenuOpen);
+};
+
+// Función para cerrar el menú al hacer clic en un enlace
+const closeMenu = () => {
+  setIsMenuOpen(false);
+};
 
   useEffect(() => {
 
@@ -121,8 +128,8 @@ return () => {
   }
 
   return (
-    <nav className="bg-orange-500 px-6 py-2 relative z-50">
-      <div className="flex justify-between items-center">
+<nav className="bg-orange-500 px-6 py-2 fixed top-0 left-0 w-full z-50">
+<div className="flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center">
           <Link href="/dashboard">
@@ -174,32 +181,36 @@ return () => {
 </div>
 
 
-        {/* Menú hamburguesa para móviles */}
-        <div className="block lg:hidden">
+    {/* Menú hamburguesa para móviles */}
+    <div className="block lg:hidden">
           <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
         </div>
       </div>
 
-      {/* Menú de navegación */}
-      <div className={`lg:flex mt-2 ${isMenuOpen ? 'block' : 'hidden'} lg:block`}>
-        {/* Enlaces de navegación */}
-        <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+  {/* Menú de navegación */}
+      <div
+        className={`lg:flex mt-2 transition-all duration-300 ease-in-out ${isMenuOpen ? 'block max-h-[1000px]' : 'hidden max-h-0'}`}
+        style={{ overflow: 'hidden' }}
+      >
+        
+            {/* Enlaces de navegación */}
+  <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
+          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
             <Link href="/dashboard/invoices">Ofertas</Link>
           </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
             <Link href="/dashboard/customers">Promociones</Link>
           </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
             <Link href="/dashboard/jugos">Jugos</Link>
           </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
             <Link href="/dashboard/hervidos">Hervidos</Link>
           </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
             <Link href="/dashboard/contactanos">Contáctanos</Link>
           </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
+          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
             <Link href="/dashboard/quienes_somos">Sobre Nosotros</Link>
           </li>
         
