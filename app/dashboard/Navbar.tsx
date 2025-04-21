@@ -186,42 +186,33 @@ return () => {
           <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
         </div>
       </div>
-
-  {/* Menú de navegación */}
-      <div
-        className={`lg:flex mt-2 transition-all duration-300 ease-in-out ${isMenuOpen ? 'block max-h-[1000px]' : 'hidden max-h-0'}`}
-        style={{ overflow: 'hidden' }}
-      >
-        
-            {/* Enlaces de navegación */}
+{/* Menú de navegación */}
+<div
+  className={`lg:flex mt-2 transition-all duration-300 ease-in-out ${isMenuOpen ? 'block max-h-[1000px]' : 'hidden max-h-0'} lg:max-h-none lg:opacity-100`}
+  style={{ overflow: 'hidden' }}
+>
+  {/* Enlaces de navegación */}
   <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-            <Link href="/dashboard/invoices">Ofertas</Link>
-          </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-            <Link href="/dashboard/customers">Promociones</Link>
-          </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-            <Link href="/dashboard/jugos">Jugos</Link>
-          </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-            <Link href="/dashboard/hervidos">Hervidos</Link>
-          </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-            <Link href="/dashboard/contactanos">Contáctanos</Link>
-          </li>
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-            <Link href="/dashboard/quienes_somos">Sobre Nosotros</Link>
-          </li>
-        
-       {/*/ <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/dashboard/anadir">Añadir productos</Link>
-          </li>
-        
-          <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105">
-            Pedidos
-          </li> */}
-        </ul>
+    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
+      <Link href="/dashboard/invoices">Ofertas</Link>
+    </li>
+    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
+      <Link href="/dashboard/customers">Promociones</Link>
+    </li>
+    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
+      <Link href="/dashboard/jugos">Jugos</Link>
+    </li>
+    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
+      <Link href="/dashboard/hervidos">Hervidos</Link>
+    </li>
+    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
+      <Link href="/dashboard/contactanos">Contáctanos</Link>
+    </li>
+    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
+      <Link href="/dashboard/quienes_somos">Sobre Nosotros</Link>
+    </li>
+  </ul>
+
 
    {/* Barra de búsqueda */}
    <form 
