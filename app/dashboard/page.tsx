@@ -201,7 +201,7 @@ if (cargando) {
 
 
 
-      {/* Productos destacados */}
+ {/* Productos destacados */}
 <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12 px-2">
   {[1, 2, 3, 4].map((_, i) => (
     <div key={i} className="border rounded-lg overflow-hidden shadow-md transition hover:shadow-xl">
@@ -209,8 +209,8 @@ if (cargando) {
         src={`/publi${i + 1}.png`}
         alt={`Producto destacado ${i + 1}`}
         width={200}
-        height={260}
-        className="w-full h-[140px] sm:h-[180px] object-cover"
+        height={300}
+        className="w-full h-[140px] sm:h-[240px] md:h-[320px] object-cover"
       />
       <div className="p-3 text-center">
         <Link href="/dashboard/hervidos">
@@ -222,6 +222,8 @@ if (cargando) {
     </div>
   ))}
 </section>
+
+
 
 
 
