@@ -327,7 +327,7 @@ if (cargando) {
  {/* Banner inferior */}
  <section className="mt-12">
          <Image
-           src="/cinta publicitaria 1.png" // Cambia por tu banner inferior real
+           src="/cinta publicitaria 1.jpg" // Cambia por tu banner inferior real
            alt="Coleccionables"
            width={1400}
            height={200}
