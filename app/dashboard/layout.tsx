@@ -1,5 +1,5 @@
 // app/dashboard/layout.tsx
-import Footer from "./Footeer"; // Asegúrate que esté bien escrito
+import Footer from "./Footeer"; 
 import Navbar from "./Navbar";
 import { CarritoProvider } from "./context/CarritoContext";
 

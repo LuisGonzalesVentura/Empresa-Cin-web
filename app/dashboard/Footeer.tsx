@@ -33,7 +33,6 @@ export default function Footer() {
           <ul className="space-y-1">
             <li><Link href="#">Preguntas frecuentes</Link></li>
             <li><Link href="#">Cobertura</Link></li>
-            <li><Link href="#">Covid-19</Link></li>
           </ul>
         </div>
 

@@ -12,6 +12,7 @@ interface Producto {
   foto: string;
   id_ciudad: number;
   nombre_ciudad: string;
+  
 }
 
 const images = ['/banner1.png', '/banner2.png', '/banner3.png'];
@@ -20,54 +21,67 @@ export default function Page() {
   const [current, setCurrent] = useState(0);
   const [jugos, setJugos] = useState<Producto[]>([]);
   const [hervidos, setHervidos] = useState<Producto[]>([]);
-
+  const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cantidades');
+      return saved ? JSON.parse(saved) : {};
+    }
+    return {};
+  });
+  
   const [cargando, setCargando] = useState(true);
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState<string>('');
   const [ciudades, setCiudades] = useState<{ id_ciudad: number, nombre_ciudad: string }[]>([]);
 
-  // Cargar productos y ciudades
-  useEffect(() => {
-    
-    // Cargar la ciudad seleccionada desde localStorage
-    const ciudadGuardada = localStorage.getItem('ciudadSeleccionada');
-    if (ciudadGuardada) {
-      setCiudadSeleccionada(ciudadGuardada);
-    }
+  // Cargar productos, ciudades y carrito desde localStorage
+useEffect(() => {
+  // Cargar ciudad seleccionada
+  const ciudadGuardada = localStorage.getItem('ciudadSeleccionada');
+  if (ciudadGuardada) {
+    setCiudadSeleccionada(ciudadGuardada);
+  }
 
-    // Obtener productos de hervidos
-    fetch('/api/productos/hervidos')
-      .then((res) => res.json())
-      .then((data: Producto[]) => {
-        setHervidos(data);
-      })
-      .catch((err) => {
-        console.error('Error al obtener hervidos:', err);
-      });
 
-    // Obtener productos de jugos
-    fetch('/api/productos/jugos')
-      .then((res) => res.json())
-      .then((data: Producto[]) => {
-        setJugos(data);
-        setCargando(false);
-      })
-      .catch((err) => {
-        console.error('Error al obtener jugos:', err);
-        setCargando(false);
-      });
+  // Obtener productos de hervidos
+  fetch('/api/productos/hervidos')
+    .then((res) => res.json())
+    .then((data: Producto[]) => {
+      setHervidos(data);
+    })
+    .catch((err) => {
+      console.error('Error al obtener hervidos:', err);
+    });
 
-    // Obtener ciudades disponibles
-    fetch('/api/ciudades')
-      .then((res) => res.json())
-      .then((data) => {
-        setCiudades(data);
-      });
+  // Obtener productos de jugos
+  fetch('/api/productos/jugos')
+    .then((res) => res.json())
+    .then((data: Producto[]) => {
+      setJugos(data);
+      setCargando(false);
+    })
+    .catch((err) => {
+      console.error('Error al obtener jugos:', err);
+      setCargando(false);
+    });
 
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  // Obtener ciudades disponibles
+  fetch('/api/ciudades')
+    .then((res) => res.json())
+    .then((data) => {
+      setCiudades(data);
+    });
+
+  // Carrusel de imágenes
+  const interval = setInterval(() => {
+    setCurrent((prev) => (prev + 1) % images.length);
+  }, 4000);
+  return () => clearInterval(interval);
+
+
+  
+}, []);
+
+
 
   const goToNext = () => {
     setCurrent((prev) => (prev + 1) % images.length);
@@ -78,127 +92,61 @@ export default function Page() {
   };
 
 
-  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo') => {
-    mostrarCantidadInput('¿Cuántos productos deseas añadir?', (cantidad: number) => {
-      if (isNaN(cantidad) || cantidad <= 0) {
-        mostrarAlerta('Por favor, ingresa una cantidad válida.', 'error');
-        return;
+
+  
+  
+  useEffect(() => {
+    // Verificar el carrito cada vez que el componente se carga
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito') || '[]');
+    if (carritoGuardado.length === 0) {
+      console.log("El carrito está vacío");
+    } else {
+      console.log("Productos en el carrito:", carritoGuardado);
+    }
+  }, []);
+  
+  
+  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
+    const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
+
+    const productoExistente = carritoExistente.find(p =>
+      p.id_producto === producto.id_producto && p.origen === origen
+    );
+
+    if (productoExistente) {
+      productoExistente.cantidad += cantidad;
+      if (productoExistente.cantidad <= 0) {
+        const index = carritoExistente.indexOf(productoExistente);
+        carritoExistente.splice(index, 1); // Lo elimina si la cantidad es 0 o menor
       }
-  
-      const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
-  
-      // Buscamos si ya existe un producto con ese id Y de ese origen
-      const productoExistente = carritoExistente.find(p => 
-        p.id_producto === producto.id_producto && p.origen === origen
-      );
-  
-      if (productoExistente) {
-        productoExistente.cantidad += cantidad;
-      } else {
-        carritoExistente.push({ ...producto, cantidad, origen });
-      }
-  
-      localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-  
-      const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
-        detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
-      });
-  
-      window.dispatchEvent(eventoCarritoActualizado);
-      mostrarAlerta('Producto añadido al carrito correctamente.', 'success');
+    } else if (cantidad > 0) {
+      carritoExistente.push({ ...producto, cantidad, origen });
+    }
+
+    localStorage.setItem('carrito', JSON.stringify(carritoExistente));
+
+    // Emitir un evento cuando se actualiza el carrito
+    const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
+      detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
     });
+    window.dispatchEvent(eventoCarritoActualizado);
+
+    // Actualizar cantidades en el localStorage
+    const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
+      acc[p.id_producto] = p.cantidad;
+      return acc;
+    }, {});
+
+    localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
+
+    // Emitir evento para cantidades actualizadas
+    const eventoCantidadesActualizadas = new CustomEvent('cantidadesActualizadas', {
+      detail: nuevasCantidades
+    });
+    window.dispatchEvent(eventoCantidadesActualizadas);
   };
   
-  
-// Función para mostrar alerta bonita
-const mostrarAlerta = (mensaje: string, tipo: 'success' | 'error') => {
-  const alerta = document.createElement('div');
-  alerta.textContent = mensaje;
-  Object.assign(alerta.style, {
-    position: 'fixed',
-    top: '20px',
-    right: '20px',
-    backgroundColor: tipo === 'success' ? '#4CAF50' : '#F44336',
-    color: 'white',
-    padding: '15px',
-    borderRadius: '8px',
-    fontSize: '16px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-    zIndex: '9999',
-    transition: 'opacity 0.5s ease-in-out',
-    opacity: '1'
-  });
 
-  document.body.appendChild(alerta);
-
-  setTimeout(() => {
-    alerta.style.opacity = '0';
-    setTimeout(() => alerta.remove(), 500);
-  }, 3000);
-};
-
-// Función para mostrar input personalizado de cantidad
-const mostrarCantidadInput = (mensaje: string, callback: (cantidad: number) => void) => {
-  const modal = document.createElement('div');
-  Object.assign(modal.style, {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: '10000'
-  });
-
-  const content = document.createElement('div');
-  Object.assign(content.style, {
-    backgroundColor: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-    textAlign: 'center'
-  });
-
-  const texto = document.createElement('p');
-  texto.textContent = mensaje;
-  texto.style.marginBottom = '15px';
-
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.min = '1';
-  input.value = '1';
-  input.style.padding = '10px';
-  input.style.width = '100%';
-  input.style.marginBottom = '15px';
-  input.style.border = '1px solid #ccc';
-  input.style.borderRadius = '5px';
-
-  const boton = document.createElement('button');
-  boton.textContent = 'Añadir';
-  Object.assign(boton.style, {
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer'
-  });
-
-  boton.onclick = () => {
-    const cantidad = parseInt(input.value);
-    modal.remove();
-    callback(cantidad);
-  };
-
-  content.appendChild(texto);
-  content.appendChild(input);
-  content.appendChild(boton);
-  modal.appendChild(content);
-  document.body.appendChild(modal);
-};
 if (cargando) {
   return (
     <div className="flex flex-col items-center justify-center h-[60vh]">
@@ -217,103 +165,160 @@ if (cargando) {
   return (
     <main className="bg-white text-black font-poppins px-4 md:px-16 py-6">
       {/* Carrusel */}
-      <section className="w-full mb-8 overflow-hidden rounded-lg">
-        <div className="relative w-full h-[360px] md:h-[400px] lg:h-[450px] transition-all duration-500">
-          <Image
-            key={images[current]}
-            src={images[current]}
-            alt={`Banner ${current + 1}`}
-            fill
-            className="object-cover rounded-lg"
-            priority
-          />
+{/* Carrusel */}
+<section className="w-full mb-8 overflow-hidden rounded-lg">
+  <div className="relative w-full h-[140px] sm:h-[220px] md:h-[300px] lg:h-[400px] transition-all duration-500">
+    <Image
+      key={images[current]}
+      src={images[current]}
+      alt={`banner ${current + 1}`}
+      fill
+      className="object-cover rounded-lg"
+      priority
+    />
 
-          <button
-            onClick={goToPrev}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 hover:scale-105 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
-            aria-label="Anterior"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+    <button
+      onClick={goToPrev}
+      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 hover:scale-105 text-white w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+      aria-label="Anterior"
+    >
+      <svg className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
 
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 hover:scale-105 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
-            aria-label="Siguiente"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </section>
+    <button
+      onClick={goToNext}
+      className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 hover:scale-105 text-white w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+      aria-label="Siguiente"
+    >
+      <svg className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+</section>
+
+
 
       {/* Productos destacados */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-        {[1, 2, 3, 4].map((_, i) => (
-          <div key={i} className="border rounded-lg overflow-hidden shadow-md transition hover:shadow-xl">
-            <Image
-              src={`/publi${i + 1}.png`}
-              alt={`Producto destacado ${i + 1}`}
-              width={300}
-              height={400}
-              className="w-full h-100 object-cover"
+<section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12 px-2">
+  {[1, 2, 3, 4].map((_, i) => (
+    <div key={i} className="border rounded-lg overflow-hidden shadow-md transition hover:shadow-xl">
+      <Image
+        src={`/publi${i + 1}.png`}
+        alt={`Producto destacado ${i + 1}`}
+        width={200}
+        height={260}
+        className="w-full h-[140px] sm:h-[180px] object-cover"
+      />
+      <div className="p-3 text-center">
+        <Link href="/dashboard/hervidos">
+          <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-1.5 px-3 rounded">
+            Ver más
+          </button>
+        </Link>
+      </div>
+    </div>
+  ))}
+</section>
+
+
+
+
+   {/* === Sección Hervidos === */}
+<h2 className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
+<section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
+  {cantidades === null ? (
+    <p className="text-center text-gray-500 col-span-full">Cargando productos...</p>
+  ) : (
+    hervidos
+      .filter(producto => producto.nombre_ciudad === ciudadSeleccionada)
+      .map(producto => {
+        const precioRaw = Number(producto.precio);
+        const descuentoRaw = Number(producto.descuento);
+        const precioFinalNum = descuentoRaw > 0
+          ? precioRaw * (1 - descuentoRaw / 100)
+          : precioRaw;
+        const precioFinal = precioFinalNum.toFixed(2);
+        const precioOriginal = precioRaw.toFixed(2);
+
+        const keyId = `hervido-${producto.id_producto}`;
+        const cantidad = cantidades[keyId] || 0;
+
+        return (
+          <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt={producto.nombre_producto}
+              className="w-full h-auto"
             />
-            <div className="p-4 text-center">
-            <Link href="/dashboard/hervidos">
-  <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
-    Ver más
-  </button>
-</Link>
-            </div>
-          </div>
-        ))}
-      </section>
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
 
-      {/* Categoría: Hervidos */}
-      <h2 className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-        {hervidos
-          .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
-          .map((producto) => {
-            const precioFinal = producto.descuento > 0
-              ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
-              : producto.precio;
-
-            return (
-              <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-                <img
-                  src={`/uploads/${producto.foto}`}
-                  alt="Producto"
-                  className="w-full h-auto"
-                />
-
-                <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
-
-                {producto.descuento > 0 && (
-                  <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-                    {`Descuento: ${producto.descuento}%`} 
-                    <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
-                  </div>
-                )}
-
-                <p className="text-green-600 font-bold text-xl mt-2">
-                  {`Bs. ${precioFinal}`}
-                </p>
-
-                <button
-  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-  onClick={() => agregarAlCarrito(producto, 'hervido')}
->
-  Añadir al carrito
-</button>
-
+            {descuentoRaw > 0 && (
+              <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+                {`Descuento: ${descuentoRaw}%`}
+                <span className="ml-2 line-through text-gray-500">{`Bs. ${precioOriginal}`}</span>
               </div>
-            );
-          })}
-      </section>
+            )}
+
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
+
+            {cantidad === 0 ? (
+              <button
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                onClick={() => {
+                  agregarAlCarrito(producto, 'hervido', 1);
+                  setCantidades(prev => ({
+                    ...prev,
+                    [keyId]: 1,
+                  }));
+                }}
+              >
+                Añadir al carrito
+              </button>
+            ) : (
+              <div className="mt-4 flex justify-center items-center space-x-3 bg-gray-100 rounded-full px-4 py-2 shadow-inner w-fit mx-auto">
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad - 1;
+                    agregarAlCarrito(producto, 'hervido', -1);
+                    setCantidades(prev => {
+                      const updated = { ...prev };
+                      if (nuevaCantidad <= 0) delete updated[keyId];
+                      else updated[keyId] = nuevaCantidad;
+                      return updated;
+                    });
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad + 1;
+                    agregarAlCarrito(producto, 'hervido', 1);
+                    setCantidades(prev => ({
+                      ...prev,
+                      [keyId]: nuevaCantidad,
+                    }));
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })
+  )}
+</section>
+
+
+
+
 
 
 
@@ -328,47 +333,95 @@ if (cargando) {
          />
        </section>
  
-      {/* Categoría: Jugos */}
+  
+      {/* === Sección Jugos === */}
 <h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
 <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-  {jugos
-    .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
-    .map((producto) => {
-      const precioFinal = producto.descuento > 0
-        ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
-        : producto.precio;
+  {cantidades === null ? (
+    <p className="text-center text-gray-500 col-span-full">Cargando productos...</p>
+  ) : (
+    jugos
+      .filter(producto => producto.nombre_ciudad === ciudadSeleccionada)
+      .map(producto => {
+        const precioRaw = Number(producto.precio);
+        const descuentoRaw = Number(producto.descuento);
+        const precioFinalNum = descuentoRaw > 0
+          ? precioRaw * (1 - descuentoRaw / 100)
+          : precioRaw;
+        const precioFinal = precioFinalNum.toFixed(2);
+        const precioOriginal = precioRaw.toFixed(2);
 
-      return (
-        <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-          <img
-            src={`/uploads/${producto.foto}`}
-            alt="Producto"
-            className="w-full h-auto"
-          />
+        const keyId = `jugo-${producto.id_producto}`;
+        const cantidad = cantidades[keyId] || 0;
 
-          <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+        return (
+          <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt={producto.nombre_producto}
+              className="w-full h-auto"
+            />
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
 
-          {producto.descuento > 0 && (
-            <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-              {`Descuento: ${producto.descuento}%`} 
-              <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
-            </div>
-          )}
+            {descuentoRaw > 0 && (
+              <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+                {`Descuento: ${descuentoRaw}%`}
+                <span className="ml-2 line-through text-gray-500">{`Bs. ${precioOriginal}`}</span>
+              </div>
+            )}
 
-          <p className="text-green-600 font-bold text-xl mt-2">
-            {`Bs. ${precioFinal}`}
-          </p>
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
-          <button
-  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-  onClick={() => agregarAlCarrito(producto, 'jugo')} //  'jugo'
->
-  Añadir al carrito
-</button>
-
-        </div>
-      );
-    })}
+            {cantidad === 0 ? (
+              <button
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                onClick={() => {
+                  agregarAlCarrito(producto, 'jugo', 1);
+                  setCantidades(prev => ({
+                    ...prev,
+                    [keyId]: 1,
+                  }));
+                }}
+              >
+                Añadir al carrito
+              </button>
+            ) : (
+              <div className="mt-4 flex justify-center items-center space-x-3 bg-gray-100 rounded-full px-4 py-2 shadow-inner w-fit mx-auto">
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad - 1;
+                    agregarAlCarrito(producto, 'jugo', -1);
+                    setCantidades(prev => {
+                      const updated = { ...prev };
+                      if (nuevaCantidad <= 0) delete updated[keyId];
+                      else updated[keyId] = nuevaCantidad;
+                      return updated;
+                    });
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad + 1;
+                    agregarAlCarrito(producto, 'jugo', 1);
+                    setCantidades(prev => ({
+                      ...prev,
+                      [keyId]: nuevaCantidad,
+                    }));
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })
+  )}
 </section>
 
 

@@ -21,7 +21,14 @@ export default function Page() {
   const [current, setCurrent] = useState(0);
   const [jugos, setJugos] = useState<Producto[]>([]);
   const [hervidos, setHervidos] = useState<Producto[]>([]);
-
+  const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cantidades');
+      return saved ? JSON.parse(saved) : {};
+    }
+    return {};
+  });
+  
   const [cargando, setCargando] = useState(true);
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState<string>('');
   const [ciudades, setCiudades] = useState<{ id_ciudad: number, nombre_ciudad: string }[]>([]);
@@ -70,136 +77,49 @@ export default function Page() {
     return () => clearInterval(interval);
   }, []);
 
-  const goToNext = () => {
-    setCurrent((prev) => (prev + 1) % images.length);
-  };
-
-  const goToPrev = () => {
-    setCurrent((prev) => (prev - 1 + images.length) % images.length);
-  };
 
 
 
-  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo') => {
-    mostrarCantidadInput('¿Cuántos productos deseas añadir?', (cantidad: number) => {
-      if (isNaN(cantidad) || cantidad <= 0) {
-        mostrarAlerta('Por favor, ingresa una cantidad válida.', 'error');
-        return;
+
+  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
+    const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
+
+    const productoExistente = carritoExistente.find(p =>
+      p.id_producto === producto.id_producto && p.origen === origen
+    );
+
+    if (productoExistente) {
+      productoExistente.cantidad += cantidad;
+      if (productoExistente.cantidad <= 0) {
+        const index = carritoExistente.indexOf(productoExistente);
+        carritoExistente.splice(index, 1); // Lo elimina si la cantidad es 0 o menor
       }
-  
-      const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
-  
-      // Buscamos si ya existe un producto con ese id Y de ese origen
-      const productoExistente = carritoExistente.find(p => 
-        p.id_producto === producto.id_producto && p.origen === origen
-      );
-  
-      if (productoExistente) {
-        productoExistente.cantidad += cantidad;
-      } else {
-        carritoExistente.push({ ...producto, cantidad, origen });
-      }
-  
-      localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-  
-      const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
-        detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
-      });
-  
-      window.dispatchEvent(eventoCarritoActualizado);
-      mostrarAlerta('Producto añadido al carrito correctamente.', 'success');
+    } else if (cantidad > 0) {
+      carritoExistente.push({ ...producto, cantidad, origen });
+    }
+
+    localStorage.setItem('carrito', JSON.stringify(carritoExistente));
+
+    // Emitir un evento cuando se actualiza el carrito
+    const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
+      detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
     });
+    window.dispatchEvent(eventoCarritoActualizado);
+
+    // Actualizar cantidades en el localStorage
+    const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
+      acc[p.id_producto] = p.cantidad;
+      return acc;
+    }, {});
+
+    localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
+
+    // Emitir evento para cantidades actualizadas
+    const eventoCantidadesActualizadas = new CustomEvent('cantidadesActualizadas', {
+      detail: nuevasCantidades
+    });
+    window.dispatchEvent(eventoCantidadesActualizadas);
   };
-
-// Función para mostrar alerta bonita
-const mostrarAlerta = (mensaje: string, tipo: 'success' | 'error') => {
-  const alerta = document.createElement('div');
-  alerta.textContent = mensaje;
-  Object.assign(alerta.style, {
-    position: 'fixed',
-    top: '20px',
-    right: '20px',
-    backgroundColor: tipo === 'success' ? '#4CAF50' : '#F44336',
-    color: 'white',
-    padding: '15px',
-    borderRadius: '8px',
-    fontSize: '16px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-    zIndex: '9999',
-    transition: 'opacity 0.5s ease-in-out',
-    opacity: '1'
-  });
-
-  document.body.appendChild(alerta);
-
-  setTimeout(() => {
-    alerta.style.opacity = '0';
-    setTimeout(() => alerta.remove(), 500);
-  }, 3000);
-};
-
-// Función para mostrar input personalizado de cantidad
-const mostrarCantidadInput = (mensaje: string, callback: (cantidad: number) => void) => {
-  const modal = document.createElement('div');
-  Object.assign(modal.style, {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: '10000'
-  });
-
-  const content = document.createElement('div');
-  Object.assign(content.style, {
-    backgroundColor: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-    textAlign: 'center'
-  });
-
-  const texto = document.createElement('p');
-  texto.textContent = mensaje;
-  texto.style.marginBottom = '15px';
-
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.min = '1';
-  input.value = '1';
-  input.style.padding = '10px';
-  input.style.width = '100%';
-  input.style.marginBottom = '15px';
-  input.style.border = '1px solid #ccc';
-  input.style.borderRadius = '5px';
-
-  const boton = document.createElement('button');
-  boton.textContent = 'Añadir';
-  Object.assign(boton.style, {
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer'
-  });
-
-  boton.onclick = () => {
-    const cantidad = parseInt(input.value);
-    modal.remove();
-    callback(cantidad);
-  };
-
-  content.appendChild(texto);
-  content.appendChild(input);
-  content.appendChild(boton);
-  modal.appendChild(content);
-  document.body.appendChild(modal);
-};
 if (cargando) {
   return (
     <div className="flex flex-col items-center justify-center h-[60vh]">
@@ -238,45 +158,92 @@ if (cargando) {
 {/* Título de categoría */}
 
 <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-  {jugos
-    .filter((producto) => producto.nombre_ciudad === ciudadSeleccionada) // Filtrar por ciudad
-    .map((producto) => {
-      const precioFinal = producto.descuento > 0
-        ? (producto.precio - (producto.precio * producto.descuento) / 100).toFixed(2)
-        : producto.precio;
+  {cantidades === null ? (
+    <p className="text-center text-gray-500 col-span-full">Cargando productos...</p>
+  ) : (
+    jugos
+      .filter(producto => producto.nombre_ciudad === ciudadSeleccionada)
+      .map(producto => {
+        const precioRaw = Number(producto.precio);
+        const descuentoRaw = Number(producto.descuento);
+        const precioFinalNum = descuentoRaw > 0
+          ? precioRaw * (1 - descuentoRaw / 100)
+          : precioRaw;
+        const precioFinal = precioFinalNum.toFixed(2);
+        const precioOriginal = precioRaw.toFixed(2);
 
-      return (
-        <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-          <img
-            src={`/uploads/${producto.foto}`}
-            alt="Producto"
-            className="w-full h-auto"
-          />
+        const keyId = `jugo-${producto.id_producto}`;
+        const cantidad = cantidades[keyId] || 0;
 
-          <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+        return (
+          <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt={producto.nombre_producto}
+              className="w-full h-auto"
+            />
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
 
-          {producto.descuento > 0 && (
-            <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-              {`Descuento: ${producto.descuento}%`} 
-              <span className="ml-2 line-through text-gray-500">{`Bs. ${producto.precio}`}</span>
-            </div>
-          )}
+            {descuentoRaw > 0 && (
+              <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+                {`Descuento: ${descuentoRaw}%`}
+                <span className="ml-2 line-through text-gray-500">{`Bs. ${precioOriginal}`}</span>
+              </div>
+            )}
 
-          <p className="text-green-600 font-bold text-xl mt-2">
-            {`Bs. ${precioFinal}`}
-          </p>
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
-          <button
-  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-  onClick={() => agregarAlCarrito(producto, 'jugo')}
->
-  Añadir al carrito
-</button>
-        </div>
-      );
-    })}
+            {cantidad === 0 ? (
+              <button
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                onClick={() => {
+                  agregarAlCarrito(producto, 'jugo', 1);
+                  setCantidades(prev => ({
+                    ...prev,
+                    [keyId]: 1,
+                  }));
+                }}
+              >
+                Añadir al carrito
+              </button>
+            ) : (
+              <div className="mt-4 flex justify-center items-center space-x-3 bg-gray-100 rounded-full px-4 py-2 shadow-inner w-fit mx-auto">
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad - 1;
+                    agregarAlCarrito(producto, 'jugo', -1);
+                    setCantidades(prev => {
+                      const updated = { ...prev };
+                      if (nuevaCantidad <= 0) delete updated[keyId];
+                      else updated[keyId] = nuevaCantidad;
+                      return updated;
+                    });
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad + 1;
+                    agregarAlCarrito(producto, 'jugo', 1);
+                    setCantidades(prev => ({
+                      ...prev,
+                      [keyId]: nuevaCantidad,
+                    }));
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })
+  )}
 </section>
-
 
 
     </main>

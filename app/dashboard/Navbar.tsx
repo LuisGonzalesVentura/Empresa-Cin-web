@@ -30,7 +30,13 @@ export default function Navbar() {
   const [mostrarAlerta, setMostrarAlerta] = useState(false);
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
   const [cantidadTotal, setCantidadTotal] = useState(0); // Estado del carrito
-
+  const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cantidades');
+      return saved ? JSON.parse(saved) : {};
+    }
+    return {};
+  });
 
 // Función para alternar el estado del menú
 const toggleMenu = () => {
@@ -43,7 +49,11 @@ const closeMenu = () => {
 };
 
   useEffect(() => {
-
+    const guardado = localStorage.getItem('cantidades');
+    if (guardado) {
+      setCantidades(JSON.parse(guardado));
+    }
+    
 setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
 // ✅ Esto ya se ejecuta sólo en el cliente
 const ciudadGuardada = localStorage.getItem("ciudadSeleccionada");
@@ -97,6 +107,13 @@ return () => {
 };
 
 }, []);
+
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('cantidades', JSON.stringify(cantidades));
+  }
+}, [cantidades]);
+
   const handleSeleccionCiudad = (nombre: string) => {
 
     setCiudadSeleccionada(nombre);
@@ -111,15 +128,7 @@ return () => {
   };
 
 
-  const handleBuscar = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (busqueda.trim() !== "") {
-        // No previene el comportamiento por defecto
-  if (busqueda.trim() === "") return;
-      // Usamos router.push para cambiar la URL sin recargar la página
-      router.push(`/dashboard/filtrado_busqueda?query=${encodeURIComponent(busqueda)}`);
-    }
-  };
+ 
   
 
   // No renderizamos contenido específico hasta que estemos en el cliente
@@ -197,7 +206,7 @@ return () => {
       <Link href="/dashboard/invoices">Ofertas</Link>
     </li>
     <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/customers">Promociones</Link>
+      <Link href="/dashboard/promocionesss">Promociones</Link>
     </li>
     <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
       <Link href="/dashboard/jugos">Jugos</Link>
