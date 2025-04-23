@@ -229,235 +229,204 @@
 
 
 
-
 {/* Categoría: Hervidos */}
-<h2
-  id="hervidos"
-  className="relative text-3xl font-semibold mt-12 mb-8 before:content-[''] before:block before:h-24 before:-mt-24"
->
-  Hervidos
-</h2>
+<h2 id="hervidos"></h2>
 
-{["330ml", "1 Litro", "2 Litros", "3 Litros"].map((volumen) => {
+{(() => {
   const productosFiltrados = hervidos.filter(
     (producto) =>
       producto.nombre_ciudad === ciudadSeleccionada &&
-      producto.descuento > 0 &&
-      producto.nombre_producto.toLowerCase().includes(volumen.toLowerCase())
-  );
-
-  if (productosFiltrados.length === 0) return null; // 👈 evita renderizar si no hay productos
-
-  return (
-    <div key={volumen}>
-      <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-2">{volumen}
-      <FontAwesomeIcon icon={faBottleWater} className="text-3xl text-orange-500" />
-      </h3>
-      {productosFiltrados.length === 0 ? (
-        <div className="text-center text-gray-500 text-lg mb-8">
-          No hay ofertas disponibles para envases de {volumen}
-        </div>
-      ) : (
-        <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-          {productosFiltrados.map((producto) => {
-            const keyId = `hervido-${producto.id_producto}`;
-            const precioRaw = Number(producto.precio);
-            const precioFinal = (
-              precioRaw -
-              (precioRaw * producto.descuento) / 100
-            ).toFixed(2);
-            const cantidad = cantidades[keyId] || 0;
-
-            return (
-              <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-                <img
-                  src={`/uploads/${producto.foto}`}
-                  alt={producto.nombre_producto}
-                  className="w-full h-auto"
-                />
-                <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
-
-                {producto.descuento > 0 && (
-                  <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
-                    {`Descuento: ${producto.descuento}%`}
-                    <span className="ml-2 line-through text-gray-500">{`Bs. ${precioRaw.toFixed(2)}`}</span>
-                  </div>
-                )}
-
-                <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
-
-                {cantidad === 0 ? (
-                  <button
-                    className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-                    onClick={() => {
-                      agregarAlCarrito(producto, 'hervido', 1);
-                      setCantidades(prev => ({
-                        ...prev,
-                        [keyId]: 1,
-                      }));
-                    }}
-                  >
-                    Añadir al carrito
-                  </button>
-                ) : (
-                  <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
-                    <button
-                      onClick={() => {
-                        const nuevaCantidad = cantidad - 1;
-                        agregarAlCarrito(producto, 'hervido', -1);
-                        setCantidades(prev => {
-                          const updated = { ...prev };
-                          if (nuevaCantidad <= 0) delete updated[keyId];
-                          else updated[keyId] = nuevaCantidad;
-                          return updated;
-                        });
-                      }}
-                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
-                      −
-                    </button>
-                    <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
-                    <button
-                      onClick={() => {
-                        const nuevaCantidad = cantidad + 1;
-                        agregarAlCarrito(producto, 'hervido', 1);
-                        setCantidades(prev => ({
-                          ...prev,
-                          [keyId]: nuevaCantidad,
-                        }));
-                      }}
-                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
-                      +
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </section>
-      )}
-    </div>
-  );
-})}
-
-
-
-
-
-
- {/* Banner inferior */}
- <section className="mt-12">
-         <Image
-           src="/cinta publicitaria 1.jpg" // Cambia por tu banner inferior real
-           alt="Coleccionables"
-           width={1400}
-           height={200}
-           className="rounded-lg w-full object-cover"
-         />
-  </section>
- 
-
-
-   {/* Categoría: Jugos */}
-<h2 id="jugos"  className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
-
-{["330ml", "1 Litro", "2 Litros", "3 Litros"].map((volumen) => {
-  const productosFiltrados = jugos.filter(
-    (producto) =>
-      producto.nombre_ciudad === ciudadSeleccionada &&
-      producto.descuento > 0 &&
-      producto.nombre_producto.toLowerCase().includes(volumen.toLowerCase())
+      producto.descuento > 0
   );
 
   if (productosFiltrados.length === 0) {
-    return null; // No renderiza nada si no hay productos con ese volumen
+    return (
+      <div className="text-center text-gray-500 text-lg mb-8">
+        No hay ofertas disponibles en esta ciudad.
+      </div>
+    );
   }
 
   return (
-    <div key={volumen}>
-      <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-2">
-        {volumen}
-        <FontAwesomeIcon icon={faBottleWater} className="text-3xl text-orange-500" />
-      </h3>
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-        {productosFiltrados.map((producto) => {
-          const keyId = `jugo-${producto.id_producto}`;
-          const precioRaw = Number(producto.precio);
-          const precioFinal = (
-            precioRaw - (precioRaw * producto.descuento) / 100
-          ).toFixed(2);
-          const cantidad = cantidades[keyId] || 0;
+    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
+      {productosFiltrados.map((producto) => {
+        const keyId = `hervido-${producto.id_producto}`;
+        const precioRaw = Number(producto.precio);
+        const precioFinal = (
+          precioRaw - (precioRaw * producto.descuento) / 100
+        ).toFixed(2);
+        const cantidad = cantidades[keyId] || 0;
 
-          return (
-            <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
-              <img
-                src={`/uploads/${producto.foto}`}
-                alt={producto.nombre_producto}
-                className="w-full h-auto"
-              />
-              <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+        return (
+          <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt={producto.nombre_producto}
+              className="w-full h-auto"
+            />
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
 
+            {producto.descuento > 0 && (
               <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
                 {`Descuento: ${producto.descuento}%`}
                 <span className="ml-2 line-through text-gray-500">{`Bs. ${precioRaw.toFixed(2)}`}</span>
               </div>
+            )}
 
-              <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
-              {cantidad === 0 ? (
+            {cantidad === 0 ? (
+              <button
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                onClick={() => {
+                  agregarAlCarrito(producto, 'hervido', 1);
+                  setCantidades(prev => ({
+                    ...prev,
+                    [keyId]: 1,
+                  }));
+                }}
+              >
+                Añadir al carrito
+              </button>
+            ) : (
+              <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
                 <button
-                  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
                   onClick={() => {
+                    const nuevaCantidad = cantidad - 1;
+                    agregarAlCarrito(producto, 'hervido', -1);
+                    setCantidades(prev => {
+                      const updated = { ...prev };
+                      if (nuevaCantidad <= 0) delete updated[keyId];
+                      else updated[keyId] = nuevaCantidad;
+                      return updated;
+                    });
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad + 1;
+                    agregarAlCarrito(producto, 'hervido', 1);
+                    setCantidades(prev => ({
+                      ...prev,
+                      [keyId]: nuevaCantidad,
+                    }));
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </section>
+  );
+})()}
+
+ 
+
+
+  {/* Categoría: Jugos */}
+<h2 id="jugos"></h2>
+
+{(() => {
+  const productosFiltrados = jugos.filter(
+    (producto) =>
+      producto.nombre_ciudad === ciudadSeleccionada &&
+      producto.descuento > 0
+  );
+
+  if (productosFiltrados.length === 0) {
+    return (
+      <div className="text-center text-gray-500 text-lg mb-8">
+        No hay ofertas disponibles para Jugos
+      </div>
+    );
+  }
+
+  return (
+    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
+      {productosFiltrados.map((producto) => {
+        const keyId = `jugo-${producto.id_producto}`;
+        const precioRaw = Number(producto.precio);
+        const precioFinal = (
+          precioRaw - (precioRaw * producto.descuento) / 100
+        ).toFixed(2);
+        const cantidad = cantidades[keyId] || 0;
+
+        return (
+          <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt={producto.nombre_producto}
+              className="w-full h-auto"
+            />
+            <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+
+            <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+              {`Descuento: ${producto.descuento}%`}
+              <span className="ml-2 line-through text-gray-500">{`Bs. ${precioRaw.toFixed(2)}`}</span>
+            </div>
+
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
+
+            {cantidad === 0 ? (
+              <button
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                onClick={() => {
+                  agregarAlCarrito(producto, 'jugo', 1);
+                  setCantidades(prev => ({
+                    ...prev,
+                    [keyId]: 1,
+                  }));
+                }}
+              >
+                Añadir al carrito
+              </button>
+            ) : (
+              <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad - 1;
+                    agregarAlCarrito(producto, 'jugo', -1);
+                    setCantidades(prev => {
+                      const updated = { ...prev };
+                      if (nuevaCantidad <= 0) delete updated[keyId];
+                      else updated[keyId] = nuevaCantidad;
+                      return updated;
+                    });
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad + 1;
                     agregarAlCarrito(producto, 'jugo', 1);
                     setCantidades(prev => ({
                       ...prev,
-                      [keyId]: 1,
+                      [keyId]: nuevaCantidad,
                     }));
                   }}
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
                 >
-                  Añadir al carrito
+                  +
                 </button>
-              ) : (
-                <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
-                  <button
-                    onClick={() => {
-                      const nuevaCantidad = cantidad - 1;
-                      agregarAlCarrito(producto, 'jugo', -1);
-                      setCantidades(prev => {
-                        const updated = { ...prev };
-                        if (nuevaCantidad <= 0) delete updated[keyId];
-                        else updated[keyId] = nuevaCantidad;
-                        return updated;
-                      });
-                    }}
-                    className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                  >
-                    −
-                  </button>
-                  <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
-                  <button
-                    onClick={() => {
-                      const nuevaCantidad = cantidad + 1;
-                      agregarAlCarrito(producto, 'jugo', 1);
-                      setCantidades(prev => ({
-                        ...prev,
-                        [keyId]: nuevaCantidad,
-                      }));
-                    }}
-                    className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                  >
-                    +
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </section>
-    </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </section>
   );
-})}
+})()}
 
 
 

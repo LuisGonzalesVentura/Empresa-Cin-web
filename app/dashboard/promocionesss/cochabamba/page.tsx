@@ -15,7 +15,7 @@ export default function SeleccionProducto() {
           <Link href="/dashboard/promocionesss/cochabamba/daleplay" passHref>
             <button className="flex items-center justify-between gap-5 w-full bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold py-5 px-8 rounded-2xl transition duration-300 shadow-lg hover:shadow-2xl">
               <span className="text-2xl">🎭</span>
-              <span className="flex-grow text-left">DALE PLAY A TU CARNAVAL</span>
+              <span className="flex-grow text-left">DALE PLAY A TU CARNAVAL (Finalizado el 12 de Abril 2025)</span>
               <img
                 src="/Play-station-5.png"
                 alt="Carnaval"
