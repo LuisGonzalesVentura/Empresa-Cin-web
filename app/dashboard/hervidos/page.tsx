@@ -211,8 +211,8 @@ if (cargando) {
                 Añadir al carrito
               </button>
             ) : (
-              <div className="mt-4 flex justify-center items-center space-x-3 bg-gray-100 rounded-full px-4 py-2 shadow-inner w-fit mx-auto">
-                <button
+<div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
+<button
                   onClick={() => {
                     const nuevaCantidad = cantidad - 1;
                     agregarAlCarrito(producto, 'hervido', -1);

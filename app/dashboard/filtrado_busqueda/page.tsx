@@ -171,8 +171,8 @@ const actualizarEstadoCarrito = () => {
             Añadir al carrito
           </button>
         ) : (
-          <div className="mt-4 flex justify-center items-center space-x-3 bg-gray-100 rounded-full px-4 py-2 shadow-inner w-fit mx-auto">
-            <button
+<div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
+<button
               onClick={() => agregarAlCarrito(producto, origen, -1)}
               className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold"
             >
