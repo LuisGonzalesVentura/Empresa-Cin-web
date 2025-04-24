@@ -194,15 +194,24 @@ const actualizarEstadoCarrito = () => {
 
   if (cargando) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh]">
-        <img src="/carga.png" alt="Cargando jugos" className="w-24 h-24 animate-bounce" />
-        <p className="mt-4 text-black-600 text-lg font-semibold animate-pulse">
+      <div className="flex flex-col items-center justify-center h-[70vh] bg-white">
+        <div className="w-40 h-40 mb-6">
+          <img
+            src="/carga.png"
+            alt="Cargando jugos"
+            className="w-full h-full object-contain animate-bounce"
+          />
+        </div>
+        <p className="text-orange-600 text-2xl font-semibold animate-pulse">
           Cargando productos CIN...
         </p>
+        <span className="text-lg text-gray-500 mt-4">
+          Por favor espera un momento
+        </span>
       </div>
     );
   }
-
+  
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-6 flex-wrap">

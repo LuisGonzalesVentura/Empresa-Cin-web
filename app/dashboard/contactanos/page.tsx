@@ -4,13 +4,23 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import React from 'react';
+import { useEffect } from 'react';
 
 export default function Contactanos() {
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [numeroReferencia, setNumeroReferencia] = useState('');
+  const [cargando, setCargando] = useState(true);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setCargando(false);
+    }, 1000); // 2 segundos de "carga"
+  
+    return () => clearTimeout(timeout);
+  }, []);
+  
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,6 +34,26 @@ export default function Contactanos() {
 
     window.open(gmailUrl, '_blank'); // Se abre en una nueva pestaña
   };
+  if (cargando) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] bg-white">
+        <div className="w-40 h-40 mb-6">
+          <img
+            src="/carga.png"
+            alt="Cargando jugos"
+            className="w-full h-full object-contain animate-bounce"
+          />
+        </div>
+        <p className="text-orange-600 text-2xl font-semibold animate-pulse">
+          Cargando productos CIN...
+        </p>
+        <span className="text-lg text-gray-500 mt-4">
+          Por favor espera un momento
+        </span>
+      </div>
+    );
+  }
+  
 
   return (
     <div className="min-h-screen bg-white px-4 py-8 flex flex-col items-center">
