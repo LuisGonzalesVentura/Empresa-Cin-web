@@ -1,12 +1,9 @@
   'use client';
   import { FaArrowLeft } from 'react-icons/fa';
-  import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-  import { faBottleWater } from '@fortawesome/free-solid-svg-icons';
   import { FaBars } from 'react-icons/fa';
-
-  import Image from 'next/image';
   import { useEffect, useState } from 'react';
   import Link from 'next/link';
+  import { useRouter } from 'next/navigation';
 
   interface Producto {
     id_producto: number;
@@ -36,6 +33,7 @@
     const [ciudades, setCiudades] = useState<{ id_ciudad: number, nombre_ciudad: string }[]>([]);
     const [menuOpen, setMenuOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("Destacados"); // Siempre inicia en 'Destacados'
+    const router = useRouter();
 
 
     const handleFilterChange = (filtro: string) => {
@@ -163,23 +161,43 @@
      {/* Contenedor general con comportamiento responsivo */}
 <div className="relative mb-4 px-4 flex flex-col md:flex-row md:justify-between md:items-center">
 
-{/* Íconos con nombres */}
 <div className="flex justify-center md:justify-start flex-wrap gap-4">
   {[
-    { src: "/jugo.png", label: "Jugos", anchor: "#jugos" },
-    { src: "/jugo.png", label: "Hervidos", anchor: "#hervidos" },
-    { src: "/2037713.png", label: "Merchandising", anchor: "#merchandising" },
+    { src: "/refresco (1).png", label: "Jugos", anchor: "#jugos" },
+    { src: "/refresco.png", label: "Hervidos", anchor: "#hervidos" },
+    { src: "/mercancias.png", label: "Merchandising", anchor: "#Merchandising" },
   ].map((item, index) => (
     <div key={index} className="flex flex-col items-center">
-      <a href={item.anchor}>
-        <button className="rounded-full border-2 p-1 border-gray-300">
-          <img src={item.src} alt={item.label} className="rounded-full w-14 h-14" />
-        </button>
-      </a>
+      <button
+        className="rounded-full border-2 p-1 border-gray-300"
+     onClick={() => {
+  if (item.anchor.startsWith("#")) {
+    const element = document.querySelector(item.anchor);
+    if (element) {
+      // Detectar si es móvil
+      const isMobile = window.innerWidth <= 768;
+
+      // Offset dinámico
+      const yOffset = isMobile ? -100 : -160; // ajustá estos valores a tu gusto
+
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  } else {
+    window.location.href = item.anchor;
+  }
+}}
+
+
+      >
+        <img src={item.src} alt={item.label} className="rounded-full w-14 h-14" />
+      </button>
       <span className="text-sm mt-1 font-bold">{item.label}</span>
     </div>
   ))}
 </div>
+
 
 
 {/* Menú hamburguesa */}
@@ -195,24 +213,25 @@
   {menuOpen && (
     <div className="absolute top-10 left-0 md:left-auto md:right-0 w-full md:w-60 bg-white shadow-xl p-4 rounded-md z-20">
       <div className="space-y-4 text-left">
+      <button
+  onClick={() => window.location.reload()}
+  className="text-lg text-gray-800 w-full hover:text-orange-500"
+>
+  Destacados
+</button>
+
         <button
-          onClick={() => handleFilterChange('Destacados')}
-          className="text-lg text-gray-800 w-full hover:text-orange-500"
-        >
-          Destacados
-        </button>
-        <button
-          onClick={() => handleFilterChange('Precio Menor a Mayor')}
-          className="text-lg text-gray-800 w-full hover:text-orange-500"
-        >
-          Precio Menor a Mayor
-        </button>
-        <button
-          onClick={() => handleFilterChange('Precio Mayor a Menor')}
-          className="text-lg text-gray-800 w-full hover:text-orange-500"
-        >
-          Precio Mayor a Menor
-        </button>
+  onClick={() => handleFilterChange('Precio Menor a Mayor')}
+  className="text-lg text-gray-800 w-full hover:text-orange-500"
+>
+  Precio Menor a Mayor
+</button>
+<button
+  onClick={() => handleFilterChange('Precio Mayor a Menor')}
+  className="text-lg text-gray-800 w-full hover:text-orange-500"
+>
+  Precio Mayor a Menor
+</button>
       </div>
     </div>
   )}
@@ -230,22 +249,30 @@
 
 
 {/* Categoría: Hervidos */}
-<h2 id="hervidos"></h2>
+<h2 id="hervidos" className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
 
 {(() => {
-  const productosFiltrados = hervidos.filter(
-    (producto) =>
-      producto.nombre_ciudad === ciudadSeleccionada &&
-      producto.descuento > 0
-  );
+ let productosFiltrados = hervidos.filter(
+  (producto) =>
+    producto.nombre_ciudad === ciudadSeleccionada &&
+    producto.descuento > 0
+);
 
-  if (productosFiltrados.length === 0) {
-    return (
-      <div className="text-center text-gray-500 text-lg mb-8">
-        No hay ofertas disponibles en esta ciudad.
-      </div>
-    );
-  }
+// Aplicar orden según el filtro seleccionado
+if (selectedFilter === 'Precio Menor a Mayor') {
+  productosFiltrados.sort((a, b) => {
+    const precioA = a.precio - (a.precio * a.descuento) / 100;
+    const precioB = b.precio - (b.precio * b.descuento) / 100;
+    return precioA - precioB;
+  });
+} else if (selectedFilter === 'Precio Mayor a Menor') {
+  productosFiltrados.sort((a, b) => {
+    const precioA = a.precio - (a.precio * a.descuento) / 100;
+    const precioB = b.precio - (b.precio * b.descuento) / 100;
+    return precioB - precioA;
+  });
+}
+
 
   return (
     <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
@@ -286,7 +313,7 @@
                   }));
                 }}
               >
-                Añadir al carrito
+                Agregar
               </button>
             ) : (
               <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
@@ -332,22 +359,30 @@
 
 
   {/* Categoría: Jugos */}
-<h2 id="jugos"></h2>
+<h2 id="jugos" className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
 
 {(() => {
-  const productosFiltrados = jugos.filter(
+  let productosFiltrados = jugos.filter(
     (producto) =>
       producto.nombre_ciudad === ciudadSeleccionada &&
       producto.descuento > 0
   );
-
-  if (productosFiltrados.length === 0) {
-    return (
-      <div className="text-center text-gray-500 text-lg mb-8">
-        No hay ofertas disponibles para Jugos
-      </div>
-    );
+  
+  // Aplicar orden según el filtro seleccionado
+  if (selectedFilter === 'Precio Menor a Mayor') {
+    productosFiltrados.sort((a, b) => {
+      const precioA = a.precio - (a.precio * a.descuento) / 100;
+      const precioB = b.precio - (b.precio * b.descuento) / 100;
+      return precioA - precioB;
+    });
+  } else if (selectedFilter === 'Precio Mayor a Menor') {
+    productosFiltrados.sort((a, b) => {
+      const precioA = a.precio - (a.precio * a.descuento) / 100;
+      const precioB = b.precio - (b.precio * b.descuento) / 100;
+      return precioB - precioA;
+    });
   }
+  
 
   return (
     <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
@@ -386,7 +421,7 @@
                   }));
                 }}
               >
-                Añadir al carrito
+                Agregar
               </button>
             ) : (
               <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>

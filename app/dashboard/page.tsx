@@ -298,7 +298,7 @@ if (cargando) {
                       }));
                     }}
                   >
-                    Añadir al carrito
+                    Agregar
                   </button>
                 ) : (
                   <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
@@ -431,7 +431,7 @@ if (cargando) {
                       }));
                     }}
                   >
-                    Añadir al carrito
+                    Agregar
                   </button>
                 ) : (
                   <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>

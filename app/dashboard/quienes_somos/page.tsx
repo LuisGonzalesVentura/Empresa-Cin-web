@@ -1,9 +1,22 @@
 // app/dashboard/quienes_somos/page.tsx
 import React from 'react';
+import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const QuienesSomos = () => {
   return (
     <div className=" text-black min-h-screen py-12 px-6">
+      {/* Botón Volver */}
+      <div className="w-full flex justify-end -mt-2 mr-24">
+        
+    <Link
+    href="/dashboard"
+    className="text-orange-500 text-lg flex items-center gap-2 font-semibold"
+  >
+    <FaArrowLeft />
+    <span>Volver al inicio</span>
+  </Link>
+      </div>
       <div className="max-w-4xl mx-auto text-center">
         
 

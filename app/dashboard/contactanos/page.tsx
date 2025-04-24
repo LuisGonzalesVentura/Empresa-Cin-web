@@ -30,12 +30,14 @@ export default function Contactanos() {
       
       {/* Botón Volver */}
       <div className="w-full flex justify-end -mt-2 mr-24">
-        <Link href="/dashboard" passHref>
-          <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-lg text-lg flex items-center space-x-2 transition duration-300">
-            <FaArrowLeft />
-            <span>Volver al inicio</span>
-          </button>
-        </Link>
+        
+    <Link
+    href="/dashboard"
+    className="text-orange-500 text-lg flex items-center gap-2 font-semibold"
+  >
+    <FaArrowLeft />
+    <span>Volver al inicio</span>
+  </Link>
       </div>
 
       {/* Formulario */}
