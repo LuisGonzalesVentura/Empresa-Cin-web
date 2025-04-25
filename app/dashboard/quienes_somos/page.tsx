@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { FaArrowLeft } from 'react-icons/fa';
 
 const QuienesSomos = () => {
   return (

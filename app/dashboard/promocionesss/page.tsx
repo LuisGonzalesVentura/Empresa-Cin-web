@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const departamentos = [
-  { nombre: 'La Paz/El alto', emoji: '🏔️' },
+  { nombre: 'La Paz-El alto', emoji: '🏔️' },
   { nombre: 'Santa Cruz', emoji: '🌴' },
   { nombre: 'Cochabamba', emoji: '🎉' },
   { nombre: 'Oruro', emoji: '🎭' },

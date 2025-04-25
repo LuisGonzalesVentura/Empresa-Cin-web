@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
-// ✅ INTERFAZ para tipar correctamente las ciudades
+//  INTERFAZ para tipar correctamente las ciudades
 interface Ciudad {
   id_ciudad: number;
   nombre_ciudad: string;
@@ -100,7 +100,7 @@ const handleStorageChange = () => {
 };
 window.addEventListener('storage', handleStorageChange);
 
-// 🧹 Cleanup
+//  Cleanup
 return () => {
   window.removeEventListener('storage', handleStorageChange);
   window.removeEventListener('carritoActualizado', handleCarritoActualizado);
@@ -195,6 +195,7 @@ useEffect(() => {
           <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
         </div>
       </div>
+      
 {/* Menú de navegación */}
 <div
   className={`lg:flex mt-2 transition-all duration-300 ease-in-out ${isMenuOpen ? 'block max-h-[1000px]' : 'hidden max-h-0'} lg:max-h-none lg:opacity-100`}
