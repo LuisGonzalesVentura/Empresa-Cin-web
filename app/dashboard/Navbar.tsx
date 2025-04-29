@@ -230,8 +230,9 @@ useEffect(() => {
             <FaUser className="text-lg cursor-pointer" onClick={handleUserClick} />
             {userName && (
               <span className="text-sm font-semibold text-white">
-                {userName}
-              </span>
+              {userName.split(' ')[0]}
+            </span>
+            
             )}
           </div>
 
@@ -253,8 +254,8 @@ useEffect(() => {
 
 
 
-</div>
 
+</div>
 
     {/* Menú hamburguesa para móviles */}
     <div className="block lg:hidden">
