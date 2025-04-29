@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 interface ProductoCarrito {
   id_producto: number;
@@ -112,8 +113,28 @@ export default function CarritoDetalle() {
   
 
   const handleIrAPago = () => {
-    router.push('/pago');
+    const sesion = sessionStorage.getItem('user');
+  
+    if (sesion) {
+      router.push('/pago');
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Inicia sesión',
+        text: 'Debes iniciar sesión para continuar con el pago.',
+        confirmButtonText: 'Ir al login',
+        customClass: {
+          popup: 'rounded-lg p-4 text-sm',
+          title: 'text-xl font-semibold text-red-600',
+          confirmButton: 'bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 rounded-md',
+        },
+      }).then(() => {
+        router.push('/dashboard/login');
+      });
+    }
   };
+  
+  
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
