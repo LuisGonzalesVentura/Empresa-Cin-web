@@ -195,73 +195,65 @@ useEffect(() => {
 
     return (
   <nav className="bg-orange-500 px-6 py-2 fixed top-0 left-0 w-full z-50">
-  <div className="flex justify-between items-center">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/dashboard">
-              <Image
-                src="/logo_cin.png"
-                alt="Logo CIN"
-                width={40}
-                height={40}
-                className="w-auto h-20"
-              />
-            </Link>
-          </div>
-
-        {/* Iconos de ubicación, usuario y carrito */}
-  <div className="flex items-center space-x-4 text-white relative">
-
-  {/* Ciudad y botón para seleccionar ubicación */}
-  <div className="flex flex-col relative">
-    <div 
-      className="flex items-center space-x-1 cursor-pointer"
-      onClick={() => setMostrarAlerta(true)} // Muestra el selector de ciudad
-    >
-      <FaMapMarkerAlt />
-      <span className="text-sm">
-        {ciudadSeleccionada || 'Selecciona tu ubicación'}
-      </span>
-    </div>
+  <div className="flex justify-between items-center w-full">
+  {/* Logo */}
+  <div className="flex items-center">
+    <Link href="/dashboard">
+      <Image
+        src="/logo_cin.png"
+        alt="Logo CIN"
+        width={40}
+        height={40}
+        className="w-auto h-20"
+      />
+    </Link>
   </div>
 
-            {/* Usuario */}
-            <div className="flex items-center space-x-2">
-            <FaUser className="text-lg cursor-pointer" onClick={handleUserClick} />
-            {userName && (
-              <span className="text-sm font-semibold text-white">
-              {userName.split(' ')[0]}
-            </span>
-            
-            )}
-          </div>
-
-
-
-  {/* Icono de carrito */}
-  <button
-        onClick={handleCarritoClick}
-        className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
+  {/* Iconos: ubicación, usuario, carrito */}
+  <div className="flex items-center space-x-4 text-white relative max-w-[70%] sm:max-w-full">
+    {/* Ubicación */}
+    <div className="flex flex-col relative max-w-[120px] sm:max-w-none">
+      <div 
+        className="flex items-center space-x-1 cursor-pointer truncate"
+        onClick={() => setMostrarAlerta(true)}
       >
-        <FaShoppingCart className="text-2xl text-white" />
+        <FaMapMarkerAlt />
+        <span className="text-sm truncate">
+          {ciudadSeleccionada || 'Selecciona tu ubicación'}
+        </span>
+      </div>
+    </div>
 
-        {cantidadTotal > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
-            {cantidadTotal}
-          </span>
-        )}
-      </button>
+    {/* Usuario */}
+    <div className="flex items-center space-x-2 max-w-[100px] sm:max-w-none overflow-hidden">
+      <FaUser className="text-lg cursor-pointer" onClick={handleUserClick} />
+      {userName && (
+        <span className="text-sm font-semibold text-white truncate block">
+          {userName.split(' ')[0]}
+        </span>
+      )}
+    </div>
 
+    {/* Carrito */}
+    <button
+      onClick={handleCarritoClick}
+      className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
+    >
+      <FaShoppingCart className="text-2xl text-white" />
+      {cantidadTotal > 0 && (
+        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
+          {cantidadTotal}
+        </span>
+      )}
+    </button>
+  </div>
 
-
-
+  {/* Menú hamburguesa */}
+  <div className="block lg:hidden">
+    <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
+  </div>
 </div>
 
-    {/* Menú hamburguesa para móviles */}
-    <div className="block lg:hidden">
-          <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
-        </div>
-      </div>
       
 {/* Menú de navegación */}
 <div
