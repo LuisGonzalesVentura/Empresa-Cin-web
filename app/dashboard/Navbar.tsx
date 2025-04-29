@@ -288,23 +288,38 @@ useEffect(() => {
 
 
    {/* Barra de búsqueda */}
-   <form 
-  action={`/dashboard/filtrado_busqueda`} 
-  method="GET" 
-  className="relative w-full max-w-xs ml-auto mt-4 lg:mt-0"
+   <form
+  action="/dashboard/filtrado_busqueda"
+  method="GET"
+  className="relative w-full max-w-sm ml-auto mt-4 lg:mt-0 transition-all duration-300"
 >
-  <input
-    type="text"
-    name="query" // ¡Importante para que el valor se pase por la URL!
-    placeholder="Busca algún producto"
-    className="w-full px-4 py-2 rounded-full shadow-md text-gray-700"
-    value={busqueda}
-    onChange={(e) => setBusqueda(e.target.value)}
-  />
-  <button type="submit">
-    <FaSearch className="absolute right-3 top-3 text-gray-400" />
-  </button>
+  <div className="flex items-center relative group">
+    <input
+      type="text"
+      name="query"
+      placeholder="Buscar productos..."
+      value={busqueda}
+      onChange={(e) => setBusqueda(e.target.value)}
+      className="w-full pl-10 pr-24 py-2 rounded-full shadow-md text-gray-700 
+                bg-white placeholder-gray-500 border border-orange-400 
+                focus:outline-none focus:ring-2 focus:ring-orange-500 
+                focus:w-[120%] transition-all duration-300"
+    />
+    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+    <button
+      type="submit"
+      className="absolute right-1 top-1/2 transform -translate-y-1/2 
+                bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm 
+                hover:bg-orange-600 transition-all"
+    >
+      Buscar
+    </button>
+  </div>
 </form>
+
+
+
+
 
 
 

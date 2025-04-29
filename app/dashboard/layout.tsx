@@ -2,6 +2,7 @@ import Footer from "./Footeer";
 import Navbar from "./Navbar";
 import { CarritoProvider } from "./context/CarritoContext";
 import { UserProvider } from "./context/userContext";  // Importa tu UserProvider
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata = {
   title: 'Industrias CIN',
@@ -17,6 +18,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <CarritoProvider>
           <main className="flex-1 pt-24 sm:pt-20 md:pt-32">
             {children}
+            <Analytics />
+
           </main>
         </CarritoProvider>
       </UserProvider>

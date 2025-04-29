@@ -363,15 +363,16 @@ useEffect(() => {
 
 
  {/* Banner inferior */}
- <section className="mt-12">
-         <Image
-           src="/cinta publicitaria 1.jpg" // Cambia por tu banner inferior real
-           alt="Coleccionables"
-           width={1400}
-           height={200}
-           className="rounded-lg w-full object-cover"
-         />
-       </section>
+ <section className="mt-12 px-2 sm:px-4">
+  <Image
+    src="/cinta publicitaria 1.jpg"
+    alt="Coleccionables"
+    width={1400}
+    height={400}
+    className="rounded-lg w-full object-cover"
+  />
+</section>
+
  
 
 
