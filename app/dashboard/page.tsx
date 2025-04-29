@@ -175,7 +175,6 @@ useEffect(() => {
   
   return (
     <main className="bg-white text-black font-poppins px-4 md:px-16 py-6">
-      {/* Carrusel */}
 {/* Carrusel */}
 <section className="w-full mb-8 overflow-hidden rounded-lg">
   <div className="relative w-full h-[140px] sm:h-[220px] md:h-[300px] lg:h-[400px] transition-all duration-500">
@@ -220,8 +219,8 @@ useEffect(() => {
         src={`/publi${i + 1}.png`}
         alt={`Producto destacado ${i + 1}`}
         width={200}
-        height={300}
-        className="w-full h-[140px] sm:h-[240px] md:h-[320px] object-cover"
+        height={400}
+        className="w-full h-[160px] sm:h-[340px] md:h-[320px] object-cover"
       />
       <div className="p-3 text-center">
         <Link href="/dashboard/hervidos">
