@@ -3,9 +3,8 @@ import { useRouter } from 'next/navigation'; // Importa el hook useRouter de Nex
 import { FaSearch, FaMapMarkerAlt, FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-//  INTERFAZ para tipar correctamente las ciudades
 interface Ciudad {
   id_ciudad: number;
   nombre_ciudad: string;
@@ -26,7 +25,6 @@ export default function Navbar() {
   const router = useRouter();
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
-  const [isClient, setIsClient] = useState(false); // Estado para verificar si es el cliente
   const [mostrarAlerta, setMostrarAlerta] = useState(false);
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
   const [cantidadTotal, setCantidadTotal] = useState(0); // Estado del carrito
@@ -37,6 +35,13 @@ export default function Navbar() {
     }
     return {};
   });
+
+  const [isClient, setIsClient] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
 // Función para alternar el estado del menú
 const toggleMenu = () => {
@@ -54,8 +59,8 @@ const closeMenu = () => {
       setCantidades(JSON.parse(guardado));
     }
     
+
 setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
-// ✅ Esto ya se ejecuta sólo en el cliente
 const ciudadGuardada = localStorage.getItem("ciudadSeleccionada");
 if (ciudadGuardada) {
   setCiudadSeleccionada(ciudadGuardada);
@@ -128,62 +133,123 @@ useEffect(() => {
   };
 
 
- 
   
+  useEffect(() => {
+    const cargarUsuario = () => {
+      const userSession = sessionStorage.getItem('user'); // 👈 usamos sessionStorage
+      if (userSession) {
+        const user = JSON.parse(userSession);
+        setUserName(user.nombre);
+      } else {
+        setUserName(null);
+      }
+    };
 
-  // No renderizamos contenido específico hasta que estemos en el cliente
-  if (!isClient) {
-    return null; // Devolvemos null para evitar el desajuste durante la hidratación
-  }
+    cargarUsuario(); // Al montar el componente
 
-  return (
-<nav className="bg-orange-500 px-6 py-2 fixed top-0 left-0 w-full z-50">
-<div className="flex justify-between items-center">
-        {/* Logo */}
-        <div className="flex items-center">
-          <Link href="/dashboard">
-            <Image
-              src="/logo_cin.png"
-              alt="Logo CIN"
-              width={40}
-              height={40}
-              className="w-auto h-20"
-            />
-          </Link>
-        </div>
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'user') {
+        cargarUsuario();
+      }
+    };
 
-      {/* Iconos de ubicación, usuario y carrito */}
-<div className="flex items-center space-x-4 text-white relative">
+    const handleUserChanged = () => {
+      cargarUsuario();
+    };
 
-{/* Ciudad y botón para seleccionar ubicación */}
-<div className="flex flex-col relative">
-  <div 
-    className="flex items-center space-x-1 cursor-pointer"
-    onClick={() => setMostrarAlerta(true)} // Muestra el selector de ciudad
-  >
-    <FaMapMarkerAlt />
-    <span className="text-sm">
-      {ciudadSeleccionada || 'Selecciona tu ubicación'}
-    </span>
-  </div>
-</div>
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userChanged', handleUserChanged);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        cargarUsuario();
+      }
+    });
 
-{/* Icono de usuario */}
-<FaUser className="text-lg cursor-pointer" />
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userChanged', handleUserChanged);
+      document.removeEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          cargarUsuario();
+        }
+      });
+    };
+  }, []);
 
-{/* Icono de carrito */}
-<button
-      onClick={handleCarritoClick}
-      className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
+  const handleUserClick = () => {
+    const userSession = sessionStorage.getItem("user");
+    if (userSession) {
+      router.push('/dashboard/login/dashboard_login');
+    } else {
+      router.push('/dashboard/login');
+    }
+  };
+
+  
+    
+
+    // No renderizamos contenido específico hasta que estemos en el cliente
+    if (!isClient) {
+      return null; // Devolvemos null para evitar el desajuste durante la hidratación
+    }
+
+    return (
+  <nav className="bg-orange-500 px-6 py-2 fixed top-0 left-0 w-full z-50">
+  <div className="flex justify-between items-center">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link href="/dashboard">
+              <Image
+                src="/logo_cin.png"
+                alt="Logo CIN"
+                width={40}
+                height={40}
+                className="w-auto h-20"
+              />
+            </Link>
+          </div>
+
+        {/* Iconos de ubicación, usuario y carrito */}
+  <div className="flex items-center space-x-4 text-white relative">
+
+  {/* Ciudad y botón para seleccionar ubicación */}
+  <div className="flex flex-col relative">
+    <div 
+      className="flex items-center space-x-1 cursor-pointer"
+      onClick={() => setMostrarAlerta(true)} // Muestra el selector de ciudad
     >
-      <FaShoppingCart className="text-2xl text-white" />
+      <FaMapMarkerAlt />
+      <span className="text-sm">
+        {ciudadSeleccionada || 'Selecciona tu ubicación'}
+      </span>
+    </div>
+  </div>
 
-      {cantidadTotal > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
-          {cantidadTotal}
-        </span>
-      )}
-    </button>
+            {/* Usuario */}
+            <div className="flex items-center space-x-2">
+            <FaUser className="text-lg cursor-pointer" onClick={handleUserClick} />
+            {userName && (
+              <span className="text-sm font-semibold text-white">
+                {userName}
+              </span>
+            )}
+          </div>
+
+
+
+  {/* Icono de carrito */}
+  <button
+        onClick={handleCarritoClick}
+        className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
+      >
+        <FaShoppingCart className="text-2xl text-white" />
+
+        {cantidadTotal > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
+            {cantidadTotal}
+          </span>
+        )}
+      </button>
 
 
 
@@ -290,13 +356,9 @@ useEffect(() => {
         className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
         onChange={(e) => {
           localStorage.removeItem('carrito');
-
           handleSeleccionCiudad(e.target.value);
           setMostrarAlerta(false);
           window.location.reload();
-
-
-
         }}
         value={ciudadSeleccionada}
       >

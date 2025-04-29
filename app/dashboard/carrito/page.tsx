@@ -60,38 +60,56 @@ export default function CarritoDetalle() {
     return productos.reduce((total, producto) => total + producto.cantidad, 0);
   };
 
- const quitarDelCarrito = (id_producto: number, origen: string) => {
-  // Obtener el carrito desde el localStorage
-  const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
-
-  // Encontrar el producto en el carrito
-  const productoIndex = carrito.findIndex((item: any) => item.id_producto === id_producto && item.origen === origen);
-
-  if (productoIndex !== -1) {
-    // Reducir la cantidad del producto
-    carrito[productoIndex].cantidad -= 1;
-
-    // Si la cantidad llega a 0, eliminar el producto del carrito
-    if (carrito[productoIndex].cantidad <= 0) {
-      carrito.splice(productoIndex, 1);
+  const quitarDelCarrito = (id_producto: number, origen: string) => {
+    // Obtener el carrito desde el localStorage
+    const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+  
+    // Encontrar el producto en el carrito
+    const productoIndex = carrito.findIndex((item: any) => item.id_producto === id_producto && item.origen === origen);
+  
+    if (productoIndex !== -1) {
+      // Reducir la cantidad del producto
+      carrito[productoIndex].cantidad -= 1;
+  
+      // Si la cantidad llega a 0, eliminar el producto del carrito
+      if (carrito[productoIndex].cantidad <= 0) {
+        carrito.splice(productoIndex, 1);
+      }
+  
+      // Guardar el carrito actualizado en localStorage
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+  
+      // 🔄 Actualizar cantidades en localStorage
+      const cantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
+      const key = `${origen}-${id_producto}`;
+  
+      if (cantidades[key]) {
+        cantidades[key] -= 1;
+  
+        if (cantidades[key] <= 0) {
+          delete cantidades[key];
+        }
+  
+        localStorage.setItem('cantidades', JSON.stringify(cantidades));
+      }
+  
+      // Actualizar el estado de productos para reflejar los cambios en la UI
+      setProductos([...carrito]);
+  
+      // Calcular la cantidad total después de la eliminación
+      const cantidadTotal = carrito.reduce((acc: number, item: any) => acc + item.cantidad, 0);
+  
+      // Crear y despachar el evento de actualización del carrito
+      const evento = new CustomEvent('carritoActualizado', {
+        detail: { cantidadTotal }
+      });
+      window.dispatchEvent(evento);
+  
+      // 🔁 También notificar para que otras partes reaccionen (como el dashboard)
+      window.dispatchEvent(new CustomEvent('userChanged'));
     }
-
-    // Guardar el carrito actualizado en localStorage
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-
-    // Actualizar el estado de productos para reflejar los cambios en la UI
-    setProductos([...carrito]);
-
-    // Calcular la cantidad total después de la eliminación
-    const cantidadTotal = carrito.reduce((acc: number, item: any) => acc + item.cantidad, 0);
-
-    // Crear y despachar el evento de actualización del carrito
-    const evento = new CustomEvent('carritoActualizado', {
-      detail: { cantidadTotal }
-    });
-    window.dispatchEvent(evento);
-  }
-};
+  };
+  
 
   const handleIrAPago = () => {
     router.push('/pago');
@@ -153,11 +171,15 @@ export default function CarritoDetalle() {
                       Total: Bs. {totalProducto.toFixed(2)}
                     </span>
                     <button
-                      className="mt-2 text-red-500 hover:text-red-700 font-semibold"
-                      onClick={() => quitarDelCarrito(producto.id_producto, producto.origen)}
-                    >
-                      Quitar
-                    </button>
+  className="mt-2 text-red-500 hover:text-red-700 font-semibold"
+  onClick={() => {
+    quitarDelCarrito(producto.id_producto, producto.origen);
+    window.dispatchEvent(new CustomEvent('userChanged'));
+  }}
+>
+  Quitar
+</button>
+
                   </div>
                 </div>
               );

@@ -86,44 +86,51 @@ export default function Page() {
     setCurrent((prev) => (prev - 1 + images.length) % images.length);
   };
 
-
+  useEffect(() => {
+    localStorage.setItem('cantidades', JSON.stringify(cantidades));
+  }, [cantidades]);
+  
 
   
 
   const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
     const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
-  
+
     const productoExistente = carritoExistente.find(p =>
       p.id_producto === producto.id_producto && p.origen === origen
     );
-  
+
     if (productoExistente) {
       productoExistente.cantidad += cantidad;
       if (productoExistente.cantidad <= 0) {
         const index = carritoExistente.indexOf(productoExistente);
-        carritoExistente.splice(index, 1); // Elimina si la cantidad es 0 o menor
+        carritoExistente.splice(index, 1); // Lo elimina si la cantidad es 0 o menor
       }
     } else if (cantidad > 0) {
       carritoExistente.push({ ...producto, cantidad, origen });
     }
-  
-    // Guardar el carrito actualizado en localStorage
+
     localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-  
-    // Actualizar el estado de las cantidades
-    const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
-      acc[p.id_producto] = p.cantidad;
-      return acc;
-    }, {});
-  
-    // Guardar las nuevas cantidades en localStorage
-    localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
-  
-    // Actualizar la cantidad total del carrito
+
+    // Emitir un evento cuando se actualiza el carrito
     const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
       detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
     });
     window.dispatchEvent(eventoCarritoActualizado);
+
+    // Actualizar cantidades en el localStorage
+    const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
+      acc[p.id_producto] = p.cantidad;
+      return acc;
+    }, {});
+
+    localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
+
+    // Emitir evento para cantidades actualizadas
+    const eventoCantidadesActualizadas = new CustomEvent('cantidadesActualizadas', {
+      detail: nuevasCantidades
+    });
+    window.dispatchEvent(eventoCantidadesActualizadas);
   };
 
   if (cargando) {
@@ -227,18 +234,22 @@ export default function Page() {
                 <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
                 {cantidad === 0 ? (
-                  <button
-                    className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-                    onClick={() => {
-                      agregarAlCarrito(producto, 'hervido', 1);
-                      setCantidades(prev => ({
-                        ...prev,
-                        [keyId]: 1,
-                      }));
-                    }}
-                  >
-                    Agregar
-                  </button>
+              <button
+              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+              onClick={() => {
+                const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
+                const cantidadGuardada = storedCantidades[keyId] || 1;
+            
+                agregarAlCarrito(producto, 'hervido', cantidadGuardada);
+                
+                setCantidades(prev => ({
+                  ...prev,
+                  [keyId]: cantidadGuardada,
+                }));
+              }}
+            >
+              Agregar
+            </button>
                 ) : (
                   <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
                     <button

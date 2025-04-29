@@ -80,7 +80,10 @@ export default function Page() {
   }, []);
 
 
-
+  useEffect(() => {
+    localStorage.setItem('cantidades', JSON.stringify(cantidades));
+  }, [cantidades]);
+  
 
 
   const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
@@ -122,6 +125,7 @@ export default function Page() {
     });
     window.dispatchEvent(eventoCantidadesActualizadas);
   };
+
   if (cargando) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] bg-white">
@@ -223,18 +227,22 @@ export default function Page() {
                 <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
                 {cantidad === 0 ? (
-                  <button
-                    className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
-                    onClick={() => {
-                      agregarAlCarrito(producto, 'jugo', 1);
-                      setCantidades(prev => ({
-                        ...prev,
-                        [keyId]: 1,
-                      }));
-                    }}
-                  >
-                    Agregar
-                  </button>
+                   <button
+                   className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                   onClick={() => {
+                     const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
+                     const cantidadGuardada = storedCantidades[keyId] || 1;
+                 
+                     agregarAlCarrito(producto, 'jugo', cantidadGuardada);
+                     
+                     setCantidades(prev => ({
+                       ...prev,
+                       [keyId]: cantidadGuardada,
+                     }));
+                   }}
+                 >
+                   Agregar
+                 </button>
                 ) : (
                   <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
                     <button

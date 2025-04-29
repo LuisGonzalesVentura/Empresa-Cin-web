@@ -86,44 +86,52 @@
     
    ;
     
-    
+   useEffect(() => {
+    localStorage.setItem('cantidades', JSON.stringify(cantidades));
+  }, [cantidades]);
+  
 
 
-    const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
-      const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
-    
-      const productoExistente = carritoExistente.find(p =>
-        p.id_producto === producto.id_producto && p.origen === origen
-      );
-    
-      if (productoExistente) {
-        productoExistente.cantidad += cantidad;
-        if (productoExistente.cantidad <= 0) {
-          const index = carritoExistente.indexOf(productoExistente);
-          carritoExistente.splice(index, 1); // Elimina si la cantidad es 0 o menor
-        }
-      } else if (cantidad > 0) {
-        carritoExistente.push({ ...producto, cantidad, origen });
+  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
+    const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
+
+    const productoExistente = carritoExistente.find(p =>
+      p.id_producto === producto.id_producto && p.origen === origen
+    );
+
+    if (productoExistente) {
+      productoExistente.cantidad += cantidad;
+      if (productoExistente.cantidad <= 0) {
+        const index = carritoExistente.indexOf(productoExistente);
+        carritoExistente.splice(index, 1); // Lo elimina si la cantidad es 0 o menor
       }
-    
-      // Guardar el carrito actualizado en localStorage
-      localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-    
-      // Actualizar el estado de las cantidades
-      const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
-        acc[p.id_producto] = p.cantidad;
-        return acc;
-      }, {});
-    
-      // Guardar las nuevas cantidades en localStorage
-      localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
-    
-      // Actualizar la cantidad total del carrito
-      const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
-        detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
-      });
-      window.dispatchEvent(eventoCarritoActualizado);
-    };
+    } else if (cantidad > 0) {
+      carritoExistente.push({ ...producto, cantidad, origen });
+    }
+
+    localStorage.setItem('carrito', JSON.stringify(carritoExistente));
+
+    // Emitir un evento cuando se actualiza el carrito
+    const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
+      detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
+    });
+    window.dispatchEvent(eventoCarritoActualizado);
+
+    // Actualizar cantidades en el localStorage
+    const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
+      acc[p.id_producto] = p.cantidad;
+      return acc;
+    }, {});
+
+    localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
+
+    // Emitir evento para cantidades actualizadas
+    const eventoCantidadesActualizadas = new CustomEvent('cantidadesActualizadas', {
+      detail: nuevasCantidades
+    });
+    window.dispatchEvent(eventoCantidadesActualizadas);
+  };
+
     if (cargando) {
       return (
         <div className="flex flex-col items-center justify-center h-[70vh] bg-white">
