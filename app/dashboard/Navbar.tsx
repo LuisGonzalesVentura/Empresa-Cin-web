@@ -269,9 +269,7 @@ useEffect(() => {
 >
   {/* Enlaces de navegación */}
   <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard">Inicio</Link>
-    </li>
+    
     <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
       <Link href="/dashboard/invoices">Ofertas</Link>
     </li>
