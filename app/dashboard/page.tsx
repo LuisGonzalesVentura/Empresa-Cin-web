@@ -409,16 +409,20 @@ useEffect(() => {
 
 
 
- {/* Banner inferior */}
- <section className="mt-12 px-2 sm:px-4">
+{/* Banner inferior responsivo ancho completo sin espacio en blanco ni scroll */}
+<section className="mt-12 w-screen overflow-hidden relative left-1/2 -translate-x-1/2">
   <Image
     src="/cinta publicitaria 1.jpg"
     alt="Coleccionables"
-    width={1400}
-    height={400}
-    className="rounded-lg w-full object-cover"
+    width={1920}
+    height={300}
+    className="w-screen h-[45px] sm:h-[150px] md:h-[100px] lg:h-[170px] object-cover"
+    priority
   />
 </section>
+
+
+
 
  
 
