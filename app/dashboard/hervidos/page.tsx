@@ -78,13 +78,7 @@ export default function Page() {
     return () => clearInterval(interval);
   }, []);
 
-  const goToNext = () => {
-    setCurrent((prev) => (prev + 1) % images.length);
-  };
-
-  const goToPrev = () => {
-    setCurrent((prev) => (prev - 1 + images.length) % images.length);
-  };
+ 
 
   useEffect(() => {
     localStorage.setItem('cantidades', JSON.stringify(cantidades));
@@ -93,45 +87,65 @@ export default function Page() {
 
   
 
-  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
-    const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
-
-    const productoExistente = carritoExistente.find(p =>
-      p.id_producto === producto.id_producto && p.origen === origen
+  const agregarAlCarrito = (
+    producto: Producto,
+    origen: 'hervido' | 'jugo',
+    cantidad: number = 1
+  ) => {
+    const carritoExistente: (Producto & { cantidad: number; origen: string; precio_final: number })[] =
+      JSON.parse(localStorage.getItem('carrito') || '[]');
+  
+    // Calcular el precio con descuento
+    const descuento = producto.descuento || 0; // Asume 0% si no se proporciona
+    const precioFinal = parseFloat((producto.precio - (producto.precio * descuento / 100)).toFixed(2));
+  
+    const productoExistente = carritoExistente.find(
+      (p) => p.id_producto === producto.id_producto && p.origen === origen
     );
-
+  
     if (productoExistente) {
       productoExistente.cantidad += cantidad;
+      productoExistente.precio_final = precioFinal; // Actualizar precio por si cambia el descuento
+  
       if (productoExistente.cantidad <= 0) {
         const index = carritoExistente.indexOf(productoExistente);
-        carritoExistente.splice(index, 1); // Lo elimina si la cantidad es 0 o menor
+        carritoExistente.splice(index, 1); // Eliminar si la cantidad es 0 o menor
       }
     } else if (cantidad > 0) {
-      carritoExistente.push({ ...producto, cantidad, origen });
+      carritoExistente.push({
+        ...producto,
+        cantidad,
+        origen,
+        precio_final: precioFinal
+      });
     }
-
+  
+    // Guardar carrito actualizado con precio_final incluido
     localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-
-    // Emitir un evento cuando se actualiza el carrito
+  
+    // Emitir evento con cantidad total de productos
     const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
-      detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
+      detail: {
+        cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0)
+      }
     });
     window.dispatchEvent(eventoCarritoActualizado);
-
-    // Actualizar cantidades en el localStorage
+  
+    // Crear y guardar cantidades por producto
     const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
       acc[p.id_producto] = p.cantidad;
       return acc;
     }, {});
-
+  
     localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
-
-    // Emitir evento para cantidades actualizadas
+  
+    // Emitir evento con las cantidades actualizadas
     const eventoCantidadesActualizadas = new CustomEvent('cantidadesActualizadas', {
       detail: nuevasCantidades
     });
     window.dispatchEvent(eventoCantidadesActualizadas);
   };
+  
 
   if (cargando) {
     return (
@@ -216,26 +230,26 @@ export default function Page() {
             const cantidad = cantidades[keyId] || 0;
 
             return (
-              <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+              <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
                 <img
                   src={`/uploads/${producto.foto}`}
                   alt={producto.nombre_producto}
-                  className="w-full h-auto"
+                  className="w-full h-100 object-cover rounded-xl mb-4" 
                 />
-                <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+                <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
 
                 {descuentoRaw > 0 && (
-                  <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+    <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
                     {`Descuento: ${descuentoRaw}%`}
-                    <span className="ml-2 line-through text-gray-500">{`Bs. ${precioOriginal}`}</span>
-                  </div>
+                    <span className="line-through text-gray-400 ml-1">{`Bs. ${precioOriginal}`}</span>
+                    </div>
                 )}
 
                 <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
                 {cantidad === 0 ? (
               <button
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
               onClick={() => {
                 const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
                 const cantidadGuardada = storedCantidades[keyId] || 1;
@@ -251,7 +265,7 @@ export default function Page() {
               Agregar
             </button>
                 ) : (
-                  <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
+                  <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
                     <button
                       onClick={() => {
                         const nuevaCantidad = cantidad - 1;
@@ -263,8 +277,8 @@ export default function Page() {
                           return updated;
                         });
                       }}
-                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
+                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                      >
                       −
                     </button>
                     <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
@@ -277,8 +291,8 @@ export default function Page() {
                           [keyId]: nuevaCantidad,
                         }));
                       }}
-                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
+                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                      >
                       +
                     </button>
                   </div>

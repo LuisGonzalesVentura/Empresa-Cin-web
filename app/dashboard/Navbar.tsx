@@ -4,6 +4,7 @@ import { FaSearch, FaMapMarkerAlt, FaUser, FaShoppingCart, FaBars } from "react-
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface Ciudad {
   id_ciudad: number;
@@ -19,7 +20,7 @@ interface ProductoCarrito {
 }
 
 export default function Navbar() {
-
+  const pathname = usePathname(); // para detectar la ruta actual
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const router = useRouter();
@@ -252,7 +253,7 @@ useEffect(() => {
   <div className="block lg:hidden">
     <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
   </div>
-</div>
+</div>  
 
       
 {/* Menú de navegación */}
@@ -262,60 +263,67 @@ useEffect(() => {
 >
   {/* Enlaces de navegación */}
   <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
-    
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/invoices">Ofertas</Link>
-    </li>
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/promocionesss">Promociones</Link>
-    </li>
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/jugos">Jugos</Link>
-    </li>
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/hervidos">Hervidos</Link>
-    </li>
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/contactanos">Contáctanos</Link>
-    </li>
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/quienes_somos">Quienes Somos</Link>
-    </li>
-    <li className="hover:text-yellow-500 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105" onClick={closeMenu}>
-      <Link href="/dashboard/Merchandising">Merchandising</Link>
-    </li>
-  </ul>
+  {[
+    { href: '/dashboard/invoices', label: 'Ofertas' },
+    { href: '/dashboard/promocionesss', label: 'Promociones' },
+    { href: '/dashboard/jugos', label: 'Jugos' },
+    { href: '/dashboard/hervidos', label: 'Hervidos' },
+    { href: '/dashboard/contactanos', label: 'Contáctanos' },
+    { href: '/dashboard/quienes_somos', label: 'Quienes Somos' },
+    { href: '/dashboard/Merchandising', label: 'Merchandising' },
+  ].map(({ href, label }) => (
+    <li
+  key={href}
+  onClick={closeMenu}
+  className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 ${
+    pathname === href
+      ? 'text-yellow-400 font-bold'
+      : 'hover:text-yellow-500'
+  }`}
+>
+  <Link href={href}>{label}</Link>
+</li>
 
+  ))}
+</ul>
 
-   {/* Barra de búsqueda */}
-   <form
+{/* Barra de búsqueda mejorada UX/UI con expansión al enfocar */}
+<form
   action="/dashboard/filtrado_busqueda"
   method="GET"
-  className="relative w-full max-w-sm ml-auto mt-4 lg:mt-0 transition-all duration-300"
+  className="relative w-full max-w-sm ml-auto mr-6 mt-4 lg:mt-0 transition-all duration-300"
 >
   <div className="flex items-center relative group">
+    {/* Input */}
     <input
       type="text"
       name="query"
       placeholder="Buscar productos..."
       value={busqueda}
       onChange={(e) => setBusqueda(e.target.value)}
-      className="w-full pl-10 pr-24 py-2 rounded-full shadow-md text-gray-700 
-                bg-white placeholder-gray-500 border border-orange-400 
+      className="pl-11 pr-28 py-2.5 rounded-full text-sm shadow-md bg-white text-gray-700 
+                border border-orange-400 placeholder-gray-500 
                 focus:outline-none focus:ring-2 focus:ring-orange-500 
-                focus:w-[120%] transition-all duration-300"
+                transition-all duration-500 focus:shadow-lg focus:scale-[1.03]
+                w-full sm:w-[calc(100%+20px)] focus:w-[calc(100%+40px)]"
     />
-    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+
+    {/* Icono de búsqueda */}
+    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 group-focus-within:text-orange-600 transition-colors duration-300" />
+
+    {/* Botón */}
     <button
       type="submit"
-      className="absolute right-1 top-1/2 transform -translate-y-1/2 
-                bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm 
-                hover:bg-orange-600 transition-all"
+      className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-orange-500 hover:bg-orange-600 text-white 
+                 px-4 py-1.5 rounded-full text-sm font-semibold shadow-md transition-all duration-300 hover:scale-105 z-10"
     >
       Buscar
     </button>
   </div>
 </form>
+
+  
+
 
 
 

@@ -111,46 +111,66 @@ useEffect(() => {
     localStorage.setItem('cantidades', JSON.stringify(cantidades));
   }, [cantidades]);
   
-  const agregarAlCarrito = (producto: Producto, origen: 'hervido' | 'jugo', cantidad: number = 1) => {
-    const carritoExistente: (Producto & { cantidad: number; origen: string })[] = JSON.parse(localStorage.getItem('carrito') || '[]');
-
-    const productoExistente = carritoExistente.find(p =>
-      p.id_producto === producto.id_producto && p.origen === origen
+  const agregarAlCarrito = (
+    producto: Producto,
+    origen: 'hervido' | 'jugo',
+    cantidad: number = 1
+  ) => {
+    const carritoExistente: (Producto & { cantidad: number; origen: string; precio_final: number })[] =
+      JSON.parse(localStorage.getItem('carrito') || '[]');
+  
+    // Calcular el precio con descuento
+    const descuento = producto.descuento || 0; // Asume 0% si no se proporciona
+    const precioFinal = parseFloat((producto.precio - (producto.precio * descuento / 100)).toFixed(2));
+  
+    const productoExistente = carritoExistente.find(
+      (p) => p.id_producto === producto.id_producto && p.origen === origen
     );
-
+  
     if (productoExistente) {
       productoExistente.cantidad += cantidad;
+      productoExistente.precio_final = precioFinal; // Actualizar precio por si cambia el descuento
+  
       if (productoExistente.cantidad <= 0) {
         const index = carritoExistente.indexOf(productoExistente);
-        carritoExistente.splice(index, 1); // Lo elimina si la cantidad es 0 o menor
+        carritoExistente.splice(index, 1); // Eliminar si la cantidad es 0 o menor
       }
     } else if (cantidad > 0) {
-      carritoExistente.push({ ...producto, cantidad, origen });
+      carritoExistente.push({
+        ...producto,
+        cantidad,
+        origen,
+        precio_final: precioFinal
+      });
     }
-
+  
+    // Guardar carrito actualizado con precio_final incluido
     localStorage.setItem('carrito', JSON.stringify(carritoExistente));
-
-    // Emitir un evento cuando se actualiza el carrito
+  
+    // Emitir evento con cantidad total de productos
     const eventoCarritoActualizado = new CustomEvent('carritoActualizado', {
-      detail: { cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0) }
+      detail: {
+        cantidadTotal: carritoExistente.reduce((acc, p) => acc + p.cantidad, 0)
+      }
     });
     window.dispatchEvent(eventoCarritoActualizado);
-
-    // Actualizar cantidades en el localStorage
+  
+    // Crear y guardar cantidades por producto
     const nuevasCantidades = carritoExistente.reduce((acc: { [key: number]: number }, p) => {
       acc[p.id_producto] = p.cantidad;
       return acc;
     }, {});
-
+  
     localStorage.setItem('cantidades', JSON.stringify(nuevasCantidades));
-
-    // Emitir evento para cantidades actualizadas
+  
+    // Emitir evento con las cantidades actualizadas
     const eventoCantidadesActualizadas = new CustomEvent('cantidadesActualizadas', {
       detail: nuevasCantidades
     });
     window.dispatchEvent(eventoCantidadesActualizadas);
   };
   
+
 
   if (cargando) {
     return (
@@ -176,55 +196,80 @@ useEffect(() => {
   return (
     <main className="bg-white text-black font-poppins px-4 md:px-16 py-6">
 {/* Carrusel */}
-<section className="w-full mb-8 overflow-hidden rounded-lg">
-  <div className="relative w-full h-[140px] sm:h-[220px] md:h-[300px] lg:h-[400px] transition-all duration-500">
+<section className="w-full mb-8 overflow-hidden rounded-2xl shadow-md">
+  <div className="relative w-full h-[140px] sm:h-[220px] md:h-[300px] lg:h-[400px] transition-all duration-500 group">
+
+    {/* Imagen actual */}
     <Image
       key={images[current]}
       src={images[current]}
       alt={`banner ${current + 1}`}
       fill
-      className="object-cover rounded-lg"
+      className="object-cover rounded-2xl transition-transform duration-500 group-hover:scale-105"
       priority
     />
 
+    {/* Botón anterior */}
     <button
       onClick={goToPrev}
-      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 hover:scale-105 text-white w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-md text-orange-600 hover:bg-orange-500 hover:text-white hover:scale-110 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
       aria-label="Anterior"
     >
-      <svg className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
       </svg>
     </button>
 
+    {/* Botón siguiente */}
     <button
       onClick={goToNext}
-      className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 hover:scale-105 text-white w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
+      className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-md text-orange-600 hover:bg-orange-500 hover:text-white hover:scale-110 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300"
       aria-label="Siguiente"
     >
-      <svg className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </button>
+
+    {/* Indicadores tipo "dots" */}
+    <div className="absolute bottom-2 w-full flex justify-center gap-2">
+      {images.map((_, index) => (
+        <button
+          key={index}
+          onClick={() => setCurrent(index)}
+          className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+            current === index ? 'bg-orange-500 scale-110' : 'bg-white/60'
+          }`}
+          aria-label={`Ir al banner ${index + 1}`}
+        />
+      ))}
+    </div>
   </div>
 </section>
 
 
 
- {/* Productos destacados */}
+
+{/* Productos destacados */}
 <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12 px-2">
   {[1, 2, 3, 4].map((_, i) => (
-    <div key={i} className="border rounded-lg overflow-hidden shadow-md transition hover:shadow-xl">
+    <div
+      key={i}
+      className="border rounded-lg overflow-hidden shadow-md transition hover:shadow-xl cursor-pointer group"
+    >
       <Image
         src={`/publi${i + 1}.png`}
         alt={`Producto destacado ${i + 1}`}
         width={200}
         height={400}
-        className="w-full h-[160px] sm:h-[340px] md:h-[320px] object-cover"
+        className="w-full h-[160px] sm:h-[340px] md:h-[320px] object-cover transition-transform duration-300 group-hover:scale-105"
       />
       <div className="p-3 text-center">
-        <Link href="/dashboard/hervidos">
-          <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-1.5 px-3 rounded">
+        <Link href="/dashboard/hervidos" passHref>
+          <button
+            aria-label={`Ver más sobre el producto destacado ${i + 1}`}
+            className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold py-1.5 px-4 rounded-full transition-all duration-300"
+          >
             Ver más
           </button>
         </Link>
@@ -232,6 +277,8 @@ useEffect(() => {
     </div>
   ))}
 </section>
+
+
 
 
 
@@ -278,18 +325,18 @@ useEffect(() => {
             const cantidad = cantidades[keyId] || 0;
 
             return (
-              <div key={keyId} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+              <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
                 <img
                   src={`/uploads/${producto.foto}`}
-                  alt={producto.nombre_producto}
-                  className="w-full h-auto"
+                  alt={producto.nombre_producto}  
+                  className="w-full h-100 object-cover rounded-xl mb-4"
                 />
-                <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+                <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
 
                 {descuentoRaw > 0 && (
-                  <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+    <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
                     {`Descuento: ${descuentoRaw}%`}
-                    <span className="ml-2 line-through text-gray-500">{`Bs. ${precioOriginal}`}</span>
+                    <span className="line-through text-gray-400 ml-1">{`Bs. ${precioOriginal}`}</span>
                   </div>
                 )}
 
@@ -297,7 +344,7 @@ useEffect(() => {
 
                 {cantidad === 0 ? (
               <button
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
               onClick={() => {
                 const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
                 const cantidadGuardada = storedCantidades[keyId] || 1;
@@ -314,7 +361,7 @@ useEffect(() => {
             </button>
             
                 ) : (
-                  <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
+                  <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
                     <button
                       onClick={() => {
                         const nuevaCantidad = cantidad - 1;
@@ -326,8 +373,8 @@ useEffect(() => {
                           return updated;
                         });
                       }}
-                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
+                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                      >
                       −
                     </button>
                     <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
@@ -340,8 +387,8 @@ useEffect(() => {
                           [keyId]: nuevaCantidad,
                         }));
                       }}
-                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
+                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                      >
                       +
                     </button>
                   </div>
@@ -376,7 +423,7 @@ useEffect(() => {
  
 
 
-  {/* === Sección Hervidos === */}
+  {/* === Sección Jugos === */}
 
 <h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
 
@@ -419,18 +466,18 @@ useEffect(() => {
             const cantidad = cantidades[keyId] || 0;
 
             return (
-              <div key={producto.id_producto} className="border rounded-lg p-6 shadow-lg hover:shadow-xl transition text-center">
+              <div key={producto.id_producto} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
                 <img
                   src={`/uploads/${producto.foto}`}
                   alt={producto.nombre_producto}
-                  className="w-full h-auto"
+                  className="w-full h-100 object-cover rounded-xl mb-4" 
                 />
-                <p className="mt-4 text-lg font-medium">{producto.nombre_producto}</p>
+                <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
 
                 {descuentoRaw > 0 && (
-                  <div className="mt-2 text-sm text-red-600 font-semibold bg-red-100 py-1 px-2 inline-block rounded">
+    <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
                     {`Descuento: ${descuentoRaw}%`}
-                    <span className="ml-2 line-through text-gray-500">{`Bs. ${precioOriginal}`}</span>
+                    <span className="line-through text-gray-400 ml-1">{`Bs. ${precioOriginal}`}</span>
                   </div>
                 )}
 
@@ -438,7 +485,7 @@ useEffect(() => {
 
                 {cantidad === 0 ? (
                    <button
-                   className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-lg"
+                   className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
                    onClick={() => {
                      const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
                      const cantidadGuardada = storedCantidades[keyId] || 1;
@@ -454,7 +501,7 @@ useEffect(() => {
                    Agregar
                  </button>
                 ) : (
-                  <div className="mt-4 flex justify-center items-center gap--2 bg-gray-100 rounded-full px-3 py-2 shadow-inner mx-auto" style={{ maxWidth: '150px' }}>
+                  <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
                     <button
                       onClick={() => {
                         const nuevaCantidad = cantidad - 1;
@@ -466,8 +513,8 @@ useEffect(() => {
                           return updated;
                         });
                       }}
-                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
+                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                      >
                       −
                     </button>
                     <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
@@ -480,8 +527,8 @@ useEffect(() => {
                           [keyId]: nuevaCantidad,
                         }));
                       }}
-                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow-sm"
-                    >
+                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                      >
                       +
                     </button>
                   </div>

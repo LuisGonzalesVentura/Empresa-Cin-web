@@ -23,6 +23,7 @@ export default function CarritoDetalle() {
     }
     return {};
   });
+  
   useEffect(() => {
     const cargarCarrito = () => {
       const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
@@ -105,7 +106,7 @@ export default function CarritoDetalle() {
         detail: { cantidadTotal }
       });
       window.dispatchEvent(evento);
-  
+
       // 🔁 También notificar para que otras partes reaccionen (como el dashboard)
       window.dispatchEvent(new CustomEvent('userChanged'));
     }
@@ -196,6 +197,7 @@ export default function CarritoDetalle() {
   onClick={() => {
     quitarDelCarrito(producto.id_producto, producto.origen);
     window.dispatchEvent(new CustomEvent('userChanged'));
+    
   }}
 >
   Quitar
