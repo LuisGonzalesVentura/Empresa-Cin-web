@@ -201,10 +201,10 @@ useEffect(() => {
   <div className="flex items-center">
     <Link href="/dashboard">
       <Image
-        src="/logo_cin.png"
+        src="/logo_cinn.png"
         alt="Logo CIN"
-        width={40}
-        height={40}
+        width={50}
+        height={50}
         className="w-auto h-20"
       />
     </Link>
