@@ -20,6 +20,8 @@
   export default function Page() {
     const [current, setCurrent] = useState(0);
     const [jugos, setJugos] = useState<Producto[]>([]);
+    const [merchandising, setMerchandising] = useState<Producto[]>([]);
+
     const [hervidos, setHervidos] = useState<Producto[]>([]);
     const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
       if (typeof window !== 'undefined') {
@@ -71,6 +73,18 @@
           setCargando(false);
         });
 
+         // Obtener productos de jugos
+      fetch('/api/productos/merchandising')
+      .then((res) => res.json())
+      .then((data: Producto[]) => {
+        setMerchandising(data);
+        setCargando(false);
+      })
+      .catch((err) => {
+        console.error('Error al obtener merchandising:', err);
+        setCargando(false);
+      });
+
       // Obtener ciudades disponibles
       fetch('/api/ciudades')
         .then((res) => res.json())
@@ -94,7 +108,7 @@
 
   const agregarAlCarrito = (
     producto: Producto,
-    origen: 'hervido' | 'jugo',
+    origen: 'hervido' | 'jugo' | 'merchandising',
     cantidad: number = 1
   ) => {
     const carritoExistente: (Producto & { cantidad: number; origen: string; precio_final: number })[] =
@@ -307,7 +321,14 @@ if (selectedFilter === 'Precio Menor a Mayor') {
   });
 }
 
-
+ // Mostrar mensaje si no hay productos
+ if (productosFiltrados.length === 0) {
+  return (
+    <div className="text-center text-gray-500 italic mt-6">
+      Pronto habrá productos disponibles en esta categoría.
+    </div>
+  );
+}
   return (
     <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
       {productosFiltrados.map((producto) => {
@@ -389,6 +410,120 @@ if (selectedFilter === 'Precio Menor a Mayor') {
   );
 })()}
 
+
+
+{/* Categoría: Merchandising */}
+<h2 id="merchandising" className="text-3xl font-semibold mt-12 mb-8">Merchandising</h2>
+
+{(() => {
+  let productosFiltrados = merchandising.filter(
+    (producto) =>
+      producto.nombre_ciudad === ciudadSeleccionada &&
+      producto.descuento > 0
+  );
+
+  if (selectedFilter === 'Precio Menor a Mayor') {
+    productosFiltrados.sort((a, b) => {
+      const precioA = a.precio - (a.precio * a.descuento) / 100;
+      const precioB = b.precio - (b.precio * b.descuento) / 100;
+      return precioA - precioB;
+    });
+  } else if (selectedFilter === 'Precio Mayor a Menor') {
+    productosFiltrados.sort((a, b) => {
+      const precioA = a.precio - (a.precio * a.descuento) / 100;
+      const precioB = b.precio - (b.precio * b.descuento) / 100;
+      return precioB - precioA;
+    });
+  }
+ // Mostrar mensaje si no hay productos
+ if (productosFiltrados.length === 0) {
+  return (
+    <div className="text-center text-gray-500 italic mt-6">
+      Pronto habrá productos disponibles en esta categoría.
+    </div>
+  );
+}
+  return (
+    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
+      {productosFiltrados.map((producto) => {
+        const keyId = `merchandising-${producto.id_producto}`;
+        const precioRaw = Number(producto.precio);
+        const precioFinal = (
+          precioRaw - (precioRaw * producto.descuento) / 100
+        ).toFixed(2);
+        const cantidad = cantidades[keyId] || 0;
+
+        return (
+          <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
+            <img
+              src={`/uploads/${producto.foto}`}
+              alt={producto.nombre_producto}
+              className="w-full h-100 object-cover rounded-xl mb-4"
+            />
+            <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
+
+            {producto.descuento > 0 && (
+              <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
+                {`Descuento: ${producto.descuento}%`}
+                <span className="line-through text-gray-400 ml-1">{`Bs. ${precioRaw.toFixed(2)}`}</span>
+              </div>
+            )}
+
+            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
+
+            {cantidad === 0 ? (
+              <button
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
+                onClick={() => {
+                  agregarAlCarrito(producto, 'merchandising', 1);
+                  setCantidades(prev => ({
+                    ...prev,
+                    [keyId]: 1,
+                  }));
+                }}
+              >
+                Agregar
+              </button>
+            ) : (
+              <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad - 1;
+                    agregarAlCarrito(producto, 'merchandising', -1);
+                    setCantidades(prev => {
+                      const updated = { ...prev };
+                      if (nuevaCantidad <= 0) delete updated[keyId];
+                      else updated[keyId] = nuevaCantidad;
+                      return updated;
+                    });
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                >
+                  −
+                </button>
+                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                <button
+                  onClick={() => {
+                    const nuevaCantidad = cantidad + 1;
+                    agregarAlCarrito(producto, 'merchandising', 1);
+                    setCantidades(prev => ({
+                      ...prev,
+                      [keyId]: nuevaCantidad,
+                    }));
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </section>
+  );
+})()}
+
  
 
 
@@ -416,7 +551,14 @@ if (selectedFilter === 'Precio Menor a Mayor') {
       return precioB - precioA;
     });
   }
-  
+   // Mostrar mensaje si no hay productos
+   if (productosFiltrados.length === 0) {
+    return (
+      <div className="text-center text-gray-500 italic mt-6">
+        Pronto habrá productos disponibles en esta categoría.
+      </div>
+    );
+  }
 
   return (
     <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">

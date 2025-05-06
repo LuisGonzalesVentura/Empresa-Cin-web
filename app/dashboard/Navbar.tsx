@@ -65,6 +65,8 @@ setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en e
 const ciudadGuardada = localStorage.getItem("ciudadSeleccionada");
 if (ciudadGuardada) {
   setCiudadSeleccionada(ciudadGuardada);
+}else {
+  setMostrarAlerta(true); // Muestra el modal si no hay ciudad guardada
 }
 
 fetch("/api/ciudades")
@@ -321,17 +323,6 @@ useEffect(() => {
     </button>
   </div>
 </form>
-
-  
-
-
-
-
-
-
-
-
-
 
       </div>
 

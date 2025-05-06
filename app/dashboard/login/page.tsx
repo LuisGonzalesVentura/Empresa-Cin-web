@@ -7,6 +7,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isClient, setIsClient] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
@@ -119,6 +120,7 @@ export default function LoginForm() {
               required
               aria-required="true"
             />
+            
           </div>
 
           <div className="flex justify-between text-sm text-gray-600">
