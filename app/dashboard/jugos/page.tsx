@@ -146,23 +146,22 @@ export default function Page() {
   };
   
 
-
   if (cargando) {
     return (
-      <div className="flex flex-col items-center justify-center h-[70vh] bg-white">
-        <div className="w-40 h-40 mb-6">
+      <div className="flex flex-col items-center justify-center h-[75vh] bg-gradient-to-br from-white to-orange-50 px-6 text-center animate-fade-in">
+        <div className="w-48 h-48 mb-8 animate-bounce">
           <img
             src="/carga.png"
-            alt="Cargando jugos"
-            className="w-full h-full object-contain animate-bounce"
+            alt="Cargando productos"
+            className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-2xl font-semibold animate-pulse">
+        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
           Cargando productos CIN...
         </p>
-        <span className="text-lg text-gray-500 mt-4">
-          Por favor espera un momento
-        </span>
+        <p className="text-lg sm:text-xl text-gray-700 mt-4">
+          Esto tomará solo unos segundos
+        </p>
       </div>
     );
   }
