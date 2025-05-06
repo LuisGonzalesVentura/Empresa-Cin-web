@@ -187,125 +187,116 @@ export default function Page() {
 
 
 
-      
-{/* Título de categoría */}
-
-
-{["330ml", "1 Litro", "2 Litros", "3 Litros"].map(volumen => {
+    {["330ml", "1 Litro", "2 Litros", "3 Litros"].map(volumen => {
   const productosFiltrados = hervidos
     .filter(producto =>
       producto.nombre_ciudad === ciudadSeleccionada &&
       producto.nombre_producto.toLowerCase().includes(volumen.toLowerCase())
     );
 
-  // Selección de íconos de botella según el volumen
+  if (productosFiltrados.length === 0) {
+    return null; // No mostrar nada si no hay productos en esta cantidad
+  }
+
   let icono;
-  if (volumen === "330ml") icono = faBottleWater; // Ícono de botella pequeña (para refrescos)
-  else if (volumen === "1 Litro") icono = faBottleWater; // Ícono de botella mediana (para refrescos)
-  else if (volumen === "2 Litros") icono = faBottleWater; // Ícono de botella mediana (para refrescos)
-  else icono = faBottleWater; // Ícono de botella grande (para 3 Litros)
+  if (volumen === "330ml") icono = faBottleWater;
+  else if (volumen === "1 Litro") icono = faBottleWater;
+  else if (volumen === "2 Litros") icono = faBottleWater;
+  else icono = faBottleWater;
 
   return (
     <div key={volumen}>
-<h3 className="text-2xl font-bold mt-8 mb-4 flex items-center gap-3 text-left">
-{volumen}
-<FontAwesomeIcon icon={icono} className="text-3xl text-orange-500" />
-
+      <h3 className="text-2xl font-bold mt-8 mb-4 flex items-center gap-3 text-left">
+        {volumen}
+        <FontAwesomeIcon icon={icono} className="text-3xl text-orange-500" />
       </h3>
       <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-        {cantidades === null ? (
-          <p className="text-center text-gray-500 col-span-full">Cargando productos...</p>
-        ) : productosFiltrados.length === 0 ? (
-          <p className="text-center text-gray-400 italic col-span-full">Pronto habrá productos de esta cantidad</p>
-        ) : (
-          productosFiltrados.map(producto => {
-            const precioRaw = Number(producto.precio);
-            const descuentoRaw = Number(producto.descuento);
-            const precioFinalNum = descuentoRaw > 0
-              ? precioRaw * (1 - descuentoRaw / 100)
-              : precioRaw;
-            const precioFinal = precioFinalNum.toFixed(2);
-            const precioOriginal = precioRaw.toFixed(2);
-            const keyId = `hervido-${producto.id_producto}`;
-            const cantidad = cantidades[keyId] || 0;
+        {productosFiltrados.map(producto => {
+          const precioRaw = Number(producto.precio);
+          const descuentoRaw = Number(producto.descuento);
+          const precioFinalNum = descuentoRaw > 0
+            ? precioRaw * (1 - descuentoRaw / 100)
+            : precioRaw;
+          const precioFinal = precioFinalNum.toFixed(2);
+          const precioOriginal = precioRaw.toFixed(2);
+          const keyId = `hervido-${producto.id_producto}`;
+          const cantidad = cantidades[keyId] || 0;
 
-            return (
-              <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
-                <img
-                  src={`/uploads/${producto.foto}`}
-                  alt={producto.nombre_producto}
-                  className="w-full h-100 object-cover rounded-xl mb-4" 
-                />
-                <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
+          return (
+            <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
+              <img
+                src={`/uploads/${producto.foto}`}
+                alt={producto.nombre_producto}
+                className="w-full h-100 object-cover rounded-xl mb-4"
+              />
+              <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
 
-                {descuentoRaw > 0 && (
-    <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
-                    {`Descuento: ${descuentoRaw}%`}
-                    <span className="line-through text-gray-400 ml-1">{`Bs. ${precioOriginal}`}</span>
-                    </div>
-                )}
+              {descuentoRaw > 0 && (
+                <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
+                  {`Descuento: ${descuentoRaw}%`}
+                  <span className="line-through text-gray-400 ml-1">{`Bs. ${precioOriginal}`}</span>
+                </div>
+              )}
 
-                <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
+              <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
 
-                {cantidad === 0 ? (
-              <button
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
-              onClick={() => {
-                const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
-                const cantidadGuardada = storedCantidades[keyId] || 1;
-            
-                agregarAlCarrito(producto, 'hervido', cantidadGuardada);
-                
-                setCantidades(prev => ({
-                  ...prev,
-                  [keyId]: cantidadGuardada,
-                }));
-              }}
-            >
-              Agregar
-            </button>
-                ) : (
-                  <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
-                    <button
-                      onClick={() => {
-                        const nuevaCantidad = cantidad - 1;
-                        agregarAlCarrito(producto, 'hervido', -1);
-                        setCantidades(prev => {
-                          const updated = { ...prev };
-                          if (nuevaCantidad <= 0) delete updated[keyId];
-                          else updated[keyId] = nuevaCantidad;
-                          return updated;
-                        });
-                      }}
-                      className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
-                      >
-                      −
-                    </button>
-                    <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
-                    <button
-                      onClick={() => {
-                        const nuevaCantidad = cantidad + 1;
-                        agregarAlCarrito(producto, 'hervido', 1);
-                        setCantidades(prev => ({
-                          ...prev,
-                          [keyId]: nuevaCantidad,
-                        }));
-                      }}
-                      className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
-                      >
-                      +
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
+              {cantidad === 0 ? (
+                <button
+                  className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
+                  onClick={() => {
+                    const storedCantidades = JSON.parse(localStorage.getItem('cantidades') || '{}');
+                    const cantidadGuardada = storedCantidades[keyId] || 1;
+
+                    agregarAlCarrito(producto, 'hervido', cantidadGuardada);
+
+                    setCantidades(prev => ({
+                      ...prev,
+                      [keyId]: cantidadGuardada,
+                    }));
+                  }}
+                >
+                  Agregar
+                </button>
+              ) : (
+                <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
+                  <button
+                    onClick={() => {
+                      const nuevaCantidad = cantidad - 1;
+                      agregarAlCarrito(producto, 'hervido', -1);
+                      setCantidades(prev => {
+                        const updated = { ...prev };
+                        if (nuevaCantidad <= 0) delete updated[keyId];
+                        else updated[keyId] = nuevaCantidad;
+                        return updated;
+                      });
+                    }}
+                    className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                  >
+                    −
+                  </button>
+                  <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
+                  <button
+                    onClick={() => {
+                      const nuevaCantidad = cantidad + 1;
+                      agregarAlCarrito(producto, 'hervido', 1);
+                      setCantidades(prev => ({
+                        ...prev,
+                        [keyId]: nuevaCantidad,
+                      }));
+                    }}
+                    className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </section>
     </div>
   );
 })}
-
 
 
     </main>

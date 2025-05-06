@@ -293,7 +293,10 @@ useEffect(() => {
       producto.nombre_ciudad === ciudadSeleccionada &&
       producto.nombre_producto.toLowerCase().includes(volumen.toLowerCase())
     );
-
+    if (productosFiltrados.length === 0) {
+      return null; // No mostrar nada si no hay productos en esta cantidad
+    }
+  
   // Selección de íconos de botella según el volumen
   let icono;
   if (volumen === "330ml") icono = faBottleWater; // Ícono de botella pequeña (para refrescos)
@@ -438,7 +441,10 @@ useEffect(() => {
       producto.nombre_ciudad === ciudadSeleccionada &&
       producto.nombre_producto.toLowerCase().includes(volumen.toLowerCase())
     );
-
+    if (productosFiltrados.length === 0) {
+      return null; // No mostrar nada si no hay productos en esta cantidad
+    }
+  
   // Selección de íconos de botella según el volumen
   let icono;
   if (volumen === "330ml") icono = faBottleWater; // Ícono de botella pequeña (para refrescos)

@@ -1,8 +1,8 @@
 import Footer from "./Footeer"; 
 import Navbar from "./Navbar";
 import { CarritoProvider } from "./context/CarritoContext";
-import { UserProvider } from "./context/userContext";  // Importa tu UserProvider
-import { Analytics } from "@vercel/analytics/react"
+import { UserProvider } from "./context/userContext"; 
+import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata = {
