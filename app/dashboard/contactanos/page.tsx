@@ -44,12 +44,12 @@ export default function Contactanos() {
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }

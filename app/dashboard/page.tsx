@@ -171,6 +171,7 @@ useEffect(() => {
   };
   
 
+  
   if (cargando) {
     return (
       <div className="flex flex-col items-center justify-center h-[75vh] bg-gradient-to-br from-white to-orange-50 px-6 text-center animate-fade-in">
@@ -181,12 +182,12 @@ useEffect(() => {
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }
@@ -285,7 +286,7 @@ useEffect(() => {
 
       {/* === Sección Hervidos === */}
 
-<h2 className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
+<h2 className="text-3xl font-semibold mt-12 mb-8 text-orange-600">Hervidos</h2>
 
 {["330ml", "1 Litro", "2 Litros", "3 Litros"].map(volumen => {
   const productosFiltrados = hervidos
@@ -433,7 +434,7 @@ useEffect(() => {
 
   {/* === Sección Jugos === */}
 
-<h2 className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
+<h2 className="text-3xl font-semibold mt-12 mb-8 text-orange-600">Jugos</h2>
 
 {["330ml", "1 Litro", "2 Litros", "3 Litros"].map(volumen => {
   const productosFiltrados = jugos
@@ -446,17 +447,23 @@ useEffect(() => {
     }
   
   // Selección de íconos de botella según el volumen
-  let icono;
-  if (volumen === "330ml") icono = faBottleWater; // Ícono de botella pequeña (para refrescos)
-  else if (volumen === "1 Litro") icono = faBottleWater; // Ícono de botella mediana (para refrescos)
-  else if (volumen === "2 Litros") icono = faBottleWater; // Ícono de botella mediana (para refrescos)
-  else icono = faBottleWater; // Ícono de botella grande (para 3 Litros)
+let icono;
 
-  return (
-    <div key={volumen}>
-<h3 className="text-2xl font-bold mt-8 mb-4 flex items-center gap-3 text-left">
-{volumen}
-<FontAwesomeIcon icon={icono} className="text-3xl text-orange-500" />
+if (volumen === "330ml") {
+  icono = faBottleWater; // Ícono de botella pequeña (para refrescos)
+} else if (volumen === "1 Litro") {
+  icono = faBottleWater; // Ícono de botella mediana (para refrescos)
+} else if (volumen === "2 Litros") {
+  icono = faBottleWater; // Ícono de botella mediana (para refrescos)
+} else {
+  icono = faBottleWater; // Ícono de botella grande (para 3 Litros)
+}
+
+return (
+  <div key={volumen}>
+    <h3 className="text-2xl font-bold mt-8 mb-4 flex items-center gap-3 text-left">
+      {volumen}
+      <FontAwesomeIcon icon={icono} className="text-3xl text-orange-500" />
 
       </h3>
       <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
@@ -558,26 +565,26 @@ useEffect(() => {
 {/* Sección de Beneficios */}
 <section className="bg-white py-12">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl font-bold text-center mb-8">CONOCE NUESTROS BENEFICIOS</h2>
+    <h2 className="text-3xl font-bold text-center mb-8 text-orange-500">CONOCE NUESTROS BENEFICIOS</h2>
     <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 text-center">
       {/* Beneficio 1 */}
       <div className="flex flex-col items-center">
         <img src="/icono1.png" alt="Icono 1" className="w-24 h-24 mb-4" />
-        <p className="font-semibold">
+        <p className="font-semibold text-gray-800">
           Regístrate y activa tu cuenta en <br />Cin Bolivia
         </p>
       </div>
       {/* Beneficio 2 */}
       <div className="flex flex-col items-center">
         <img src="/icono2.png" alt="Icono 2" className="w-24 h-24 mb-4" />
-        <p className="font-semibold">
+        <p className="font-semibold text-gray-800">
           Revisa nuestro catálogo y <br />escoge tus productos
         </p>
       </div>
       {/* Beneficio 3 */}
       <div className="flex flex-col items-center">
         <img src="/icono3.png" alt="Icono 3" className="w-24 h-24 mb-4" />
-        <p className="font-semibold">
+        <p className="font-semibold text-gray-800">
           Recibe tu pedido en la <br />puerta de tu casa
         </p>
       </div>

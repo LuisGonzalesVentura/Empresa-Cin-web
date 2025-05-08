@@ -211,28 +211,30 @@ export default function FiltradoBusqueda() {
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }
+  
+  
   
 
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-6 flex-wrap">
-        <h2 className="text-3xl font-semibold mt-12 mb-8">Resultados para: "{query}"</h2>
+        <h2 className="text-3xl font-semibold mt-12 mb-8 text-orange-600 ">Resultados para: "{query}"</h2>
         <Link href="/dashboard" className="text-orange-500 text-lg flex items-center gap-2 font-semibold">
           <FaArrowLeft />
           <span>Volver al inicio</span>
         </Link>
       </div>
 
-      <h3 className="text-2xl font-bold mt-4 mb-6">Hervidos encontrados</h3>
+      <h3 className="text-2xl font-bold mt-4 mb-6 text-orange-600 ">Hervidos encontrados</h3>
       <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
         {filtradosHervidos.length > 0
           ? filtradosHervidos.map(producto => renderProducto(producto, 'hervido'))

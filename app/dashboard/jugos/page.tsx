@@ -1,7 +1,5 @@
 'use client';
 import Link from 'next/link';
-
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,12 +15,10 @@ interface Producto {
   nombre_ciudad: string;
 }
 
-const images = ['/banner1.png', '/banner2.png', '/banner3.png'];
 
 export default function Page() {
   const [current, setCurrent] = useState(0);
   const [jugos, setJugos] = useState<Producto[]>([]);
-  const [hervidos, setHervidos] = useState<Producto[]>([]);
   const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cantidades');
@@ -44,16 +40,7 @@ export default function Page() {
       setCiudadSeleccionada(ciudadGuardada);
     }
 
-    // Obtener productos de hervidos
-    fetch('/api/productos/hervidos')
-      .then((res) => res.json())
-      .then((data: Producto[]) => {
-        setHervidos(data);
-      })
-      .catch((err) => {
-        console.error('Error al obtener hervidos:', err);
-      });
-
+    
     // Obtener productos de jugos
     fetch('/api/productos/jugos')
       .then((res) => res.json())
@@ -73,10 +60,7 @@ export default function Page() {
         setCiudades(data);
       });
 
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
+   
   }, []);
 
 
@@ -156,22 +140,23 @@ export default function Page() {
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }
+  
   
 
   return (
     <main className="bg-white text-black font-poppins px-4 md:px-16 py-6">
 {/* Título de categoría */}
 <div className="flex items-center justify-between mb-6 flex-wrap">
-      <h2 className="text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
+      <h2 className=" text-orange-600 text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
         Jugos
       </h2>
      
@@ -186,8 +171,7 @@ export default function Page() {
 
 
 
-
-      
+     
 {/* Título de categoría */}
 
 {["330ml", "1 Litro", "2 Litros", "3 Litros"].map(volumen => {

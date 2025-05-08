@@ -15,13 +15,10 @@
     nombre_ciudad: string;
   }
 
-  const images = ['/banner1.png', '/banner2.png', '/banner3.png'];
 
   export default function Page() {
-    const [current, setCurrent] = useState(0);
     const [jugos, setJugos] = useState<Producto[]>([]);
     const [merchandising, setMerchandising] = useState<Producto[]>([]);
-
     const [hervidos, setHervidos] = useState<Producto[]>([]);
     const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
       if (typeof window !== 'undefined') {
@@ -36,7 +33,12 @@
     const [menuOpen, setMenuOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("Destacados"); // Siempre inicia en 'Destacados'
     const router = useRouter();
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
 
+
+    const categoriasValidas = ["merchandising", "hervido", "jugo"] as const;
+    type Categoria = typeof categoriasValidas[number];
+    
 
     const handleFilterChange = (filtro: string) => {
       setSelectedFilter(filtro);
@@ -92,10 +94,7 @@
           setCiudades(data);
         });
 
-      const interval = setInterval(() => {
-        setCurrent((prev) => (prev + 1) % images.length);
-      }, 4000);
-      return () => clearInterval(interval);
+     
     }, []);
     
    ;
@@ -105,6 +104,24 @@
   }, [cantidades]);
   
 
+  const productosFiltrados = () => {
+    if (!categoriaSeleccionada) {
+      // Mostrar todos los productos si no hay filtro
+      return [...jugos, ...hervidos, ...merchandising];
+    }
+  
+    switch (categoriaSeleccionada) {
+      case 'jugos':
+        return jugos;
+      case 'hervidos':
+        return hervidos;
+      case 'merchandising':
+        return merchandising;
+      default:
+        return [...jugos, ...hervidos, ...merchandising];
+    }
+  };
+  
 
   const agregarAlCarrito = (
     producto: Producto,
@@ -177,15 +194,16 @@
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }
+  
   
   
     return (
@@ -193,13 +211,13 @@
 
         
       <div className="flex items-center justify-between mb-6 flex-wrap">
-        <h2 className="text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
+        <h2 className="text-4xl text-orange-600  font-bold text-center md:text-left mb-4 md:mb-0">
           Ofertas
         </h2>
 
     <Link
     href="/dashboard"
-    className="text-orange-500 text-lg flex items-center gap-2 font-semibold"
+    className="text-orange-600 text-lg flex items-center gap-2 font-semibold"
   >
     <FaArrowLeft />
     <span>Volver al inicio</span>
@@ -209,43 +227,24 @@
      {/* Contenedor general con comportamiento responsivo */}
 <div className="relative mb-4 px-4 flex flex-col md:flex-row md:justify-between md:items-center">
 
+ 
 <div className="flex justify-center md:justify-start flex-wrap gap-4">
-  {[
-    { src: "/refresco (1).png", label: "Jugos", anchor: "#jugos" },
-    { src: "/refresco.png", label: "Hervidos", anchor: "#hervidos" },
-    { src: "/mercancias.png", label: "Merchandising", anchor: "#Merchandising" },
+  {/*{[
+    { src: "/refresco (1).png", label: "Jugos", anchor: "#jugos", categoria: "jugos" },
+    { src: "/refresco (1).png", label: "Hervidos", anchor: "#hervidos", categoria: "hervidos" },
+    { src: "/mercancias.png", label: "Merchandising", anchor: "#Merchandising", categoria: "merchandising" },
   ].map((item, index) => (
     <div key={index} className="flex flex-col items-center">
       <button
         className="rounded-full border-2 p-1 border-gray-300"
-     onClick={() => {
-  if (item.anchor.startsWith("#")) {
-    const element = document.querySelector(item.anchor);
-    if (element) {
-      // Detectar si es móvil
-      const isMobile = window.innerWidth <= 768;
-
-      // Offset dinámico
-      const yOffset = isMobile ? -100 : -160; // ajustá estos valores a tu gusto
-
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  } else {
-    window.location.href = item.anchor;
-  }
-}}
-
-
+        onClick={() => setCategoriaSeleccionada(item.categoria)}
       >
         <img src={item.src} alt={item.label} className="rounded-full w-14 h-14" />
       </button>
-      <span className="text-sm mt-1 font-bold">{item.label}</span>
+      <span className="text-sm mt-1 font-bold text-gray-700">{item.label}</span>
     </div>
-  ))}
+  ))}*/}
 </div>
-
 
 
 {/* Menú hamburguesa */}
@@ -295,133 +294,20 @@
 
 
 
-
-{/* Categoría: Hervidos */}
-<h2 id="hervidos" className="text-3xl font-semibold mt-12 mb-8">Hervidos</h2>
+{/* Categoría: Productos Destacados */}
 
 {(() => {
- let productosFiltrados = hervidos.filter(
-  (producto) =>
-    producto.nombre_ciudad === ciudadSeleccionada &&
-    producto.descuento > 0
-);
-
-// Aplicar orden según el filtro seleccionado
-if (selectedFilter === 'Precio Menor a Mayor') {
-  productosFiltrados.sort((a, b) => {
-    const precioA = a.precio - (a.precio * a.descuento) / 100;
-    const precioB = b.precio - (b.precio * b.descuento) / 100;
-    return precioA - precioB;
-  });
-} else if (selectedFilter === 'Precio Mayor a Menor') {
-  productosFiltrados.sort((a, b) => {
-    const precioA = a.precio - (a.precio * a.descuento) / 100;
-    const precioB = b.precio - (b.precio * b.descuento) / 100;
-    return precioB - precioA;
-  });
-}
-
- // Mostrar mensaje si no hay productos
- if (productosFiltrados.length === 0) {
-  return (
-    <div className="text-center text-gray-500 italic mt-6">
-      Pronto habrá productos disponibles en esta categoría.
-    </div>
-  );
-}
-  return (
-    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-      {productosFiltrados.map((producto) => {
-        const keyId = `hervido-${producto.id_producto}`;
-        const precioRaw = Number(producto.precio);
-        const precioFinal = (
-          precioRaw - (precioRaw * producto.descuento) / 100
-        ).toFixed(2);
-        const cantidad = cantidades[keyId] || 0;
-
-        return (
-          <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
-            <img
-              src={`/uploads/${producto.foto}`}
-              alt={producto.nombre_producto}
-              className="w-full h-100 object-cover rounded-xl mb-4"
-            />
-            <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
-
-            {producto.descuento > 0 && (
-    <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
-                {`Descuento: ${producto.descuento}%`}
-                <span className="line-through text-gray-400 ml-1">{`Bs. ${precioRaw.toFixed(2)}`}</span>
-              </div>
-            )}
-
-            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
-
-            {cantidad === 0 ? (
-              <button
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
-              onClick={() => {
-                  agregarAlCarrito(producto, 'hervido', 1);
-                  setCantidades(prev => ({
-                    ...prev,
-                    [keyId]: 1,
-                  }));
-                }}
-              >
-                Agregar
-              </button>
-            ) : (
-              <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
-                <button
-                  onClick={() => {
-                    const nuevaCantidad = cantidad - 1;
-                    agregarAlCarrito(producto, 'hervido', -1);
-                    setCantidades(prev => {
-                      const updated = { ...prev };
-                      if (nuevaCantidad <= 0) delete updated[keyId];
-                      else updated[keyId] = nuevaCantidad;
-                      return updated;
-                    });
-                  }}
-                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
-                  >
-                  −
-                </button>
-                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
-                <button
-                  onClick={() => {
-                    const nuevaCantidad = cantidad + 1;
-                    agregarAlCarrito(producto, 'hervido', 1);
-                    setCantidades(prev => ({
-                      ...prev,
-                      [keyId]: nuevaCantidad,
-                    }));
-                  }}
-                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
-                  >
-                  +
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </section>
-  );
-})()}
-
-
-
-{/* Categoría: Merchandising */}
-<h2 id="merchandising" className="text-3xl font-semibold mt-12 mb-8">Merchandising</h2>
-
-{(() => {
-  let productosFiltrados = merchandising.filter(
+  let productosFiltrados = [
+    ...hervidos.map(p => ({ ...p, categoria: 'hervido' })),
+    ...merchandising.map(p => ({ ...p, categoria: 'merchandising' })),
+    ...jugos.map(p => ({ ...p, categoria: 'jugo' }))
+  ].filter(
     (producto) =>
       producto.nombre_ciudad === ciudadSeleccionada &&
       producto.descuento > 0
   );
 
+  // Ordenar según filtro
   if (selectedFilter === 'Precio Menor a Mayor') {
     productosFiltrados.sort((a, b) => {
       const precioA = a.precio - (a.precio * a.descuento) / 100;
@@ -435,18 +321,19 @@ if (selectedFilter === 'Precio Menor a Mayor') {
       return precioB - precioA;
     });
   }
- // Mostrar mensaje si no hay productos
- if (productosFiltrados.length === 0) {
-  return (
-    <div className="text-center text-gray-500 italic mt-6">
-      Pronto habrá productos disponibles en esta categoría.
-    </div>
-  );
-}
+
+  if (productosFiltrados.length === 0) {
+    return (
+      <div className="text-center text-gray-500 italic mt-6">
+        Pronto habrá productos disponibles en esta categoría.
+      </div>
+    );
+  }
+
   return (
     <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
       {productosFiltrados.map((producto) => {
-        const keyId = `merchandising-${producto.id_producto}`;
+        const keyId = `${producto.categoria}-${producto.id_producto}`;
         const precioRaw = Number(producto.precio);
         const precioFinal = (
           precioRaw - (precioRaw * producto.descuento) / 100
@@ -475,28 +362,36 @@ if (selectedFilter === 'Precio Menor a Mayor') {
               <button
                 className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
                 onClick={() => {
-                  agregarAlCarrito(producto, 'merchandising', 1);
+                  const categoria = producto.categoria;
+                  if (["hervido", "jugo", "merchandising"].includes(categoria)) {
+                    agregarAlCarrito(producto, categoria as 'hervido' | 'jugo' | 'merchandising', 1);
+                  }
                   setCantidades(prev => ({
                     ...prev,
                     [keyId]: 1,
                   }));
                 }}
+                
               >
                 Agregar
               </button>
             ) : (
               <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
                 <button
-                  onClick={() => {
-                    const nuevaCantidad = cantidad - 1;
-                    agregarAlCarrito(producto, 'merchandising', -1);
-                    setCantidades(prev => {
-                      const updated = { ...prev };
-                      if (nuevaCantidad <= 0) delete updated[keyId];
-                      else updated[keyId] = nuevaCantidad;
-                      return updated;
-                    });
-                  }}
+                 onClick={() => {
+                  const nuevaCantidad = cantidad - 1;
+                  const categoria = producto.categoria;
+                  if (["hervido", "jugo", "merchandising"].includes(categoria)) {
+                    agregarAlCarrito(producto, categoria as 'hervido' | 'jugo' | 'merchandising', -1);
+                  }
+                  setCantidades(prev => {
+                    const updated = { ...prev };
+                    if (nuevaCantidad <= 0) delete updated[keyId];
+                    else updated[keyId] = nuevaCantidad;
+                    return updated;
+                  });
+                }}
+                
                   className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
                 >
                   −
@@ -505,129 +400,18 @@ if (selectedFilter === 'Precio Menor a Mayor') {
                 <button
                   onClick={() => {
                     const nuevaCantidad = cantidad + 1;
-                    agregarAlCarrito(producto, 'merchandising', 1);
+                    const categoria = producto.categoria;
+                    if (["hervido", "jugo", "merchandising"].includes(categoria)) {
+                      agregarAlCarrito(producto, categoria as 'hervido' | 'jugo' | 'merchandising', 1);
+                    }
                     setCantidades(prev => ({
                       ...prev,
                       [keyId]: nuevaCantidad,
                     }));
                   }}
+                  
                   className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
                 >
-                  +
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </section>
-  );
-})()}
-
- 
-
-
-  {/* Categoría: Jugos */}
-<h2 id="jugos" className="text-3xl font-semibold mt-12 mb-8">Jugos</h2>
-
-{(() => {
-  let productosFiltrados = jugos.filter(
-    (producto) =>
-      producto.nombre_ciudad === ciudadSeleccionada &&
-      producto.descuento > 0
-  );
-  
-  // Aplicar orden según el filtro seleccionado
-  if (selectedFilter === 'Precio Menor a Mayor') {
-    productosFiltrados.sort((a, b) => {
-      const precioA = a.precio - (a.precio * a.descuento) / 100;
-      const precioB = b.precio - (b.precio * b.descuento) / 100;
-      return precioA - precioB;
-    });
-  } else if (selectedFilter === 'Precio Mayor a Menor') {
-    productosFiltrados.sort((a, b) => {
-      const precioA = a.precio - (a.precio * a.descuento) / 100;
-      const precioB = b.precio - (b.precio * b.descuento) / 100;
-      return precioB - precioA;
-    });
-  }
-   // Mostrar mensaje si no hay productos
-   if (productosFiltrados.length === 0) {
-    return (
-      <div className="text-center text-gray-500 italic mt-6">
-        Pronto habrá productos disponibles en esta categoría.
-      </div>
-    );
-  }
-
-  return (
-    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-8">
-      {productosFiltrados.map((producto) => {
-        const keyId = `jugo-${producto.id_producto}`;
-        const precioRaw = Number(producto.precio);
-        const precioFinal = (
-          precioRaw - (precioRaw * producto.descuento) / 100
-        ).toFixed(2);
-        const cantidad = cantidades[keyId] || 0;
-
-        return (
-          <div key={keyId} className="border border-gray-200 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
-            <img
-              src={`/uploads/${producto.foto}`}
-              alt={producto.nombre_producto}
-              className="w-full h-100 object-cover rounded-xl mb-4"
-            />
-            <p className="text-lg font-semibold text-gray-800">{producto.nombre_producto}</p>
-
-            <div className="mt-2 text-sm text-red-700 font-semibold bg-red-100 py-1 px-3 inline-block rounded-full">
-            {`Descuento: ${producto.descuento}%`}
-              <span className="line-through text-gray-400 ml-1">{`Bs. ${precioRaw.toFixed(2)}`}</span>
-            </div>
-
-            <p className="text-green-600 font-bold text-xl mt-2">{`Bs. ${precioFinal}`}</p>
-
-            {cantidad === 0 ? (
-              <button
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-full text-base font-medium shadow-sm transition duration-200"
-              onClick={() => {
-                  agregarAlCarrito(producto, 'jugo', 1);
-                  setCantidades(prev => ({
-                    ...prev,
-                    [keyId]: 1,
-                  }));
-                }}
-              >
-                Agregar
-              </button>
-            ) : (
-              <div className="mt-4 flex justify-center items-center gap-2 bg-gray-100 rounded-full px-4 py-2 shadow-inner mx-auto max-w-[160px]">
-                <button
-                  onClick={() => {
-                    const nuevaCantidad = cantidad - 1;
-                    agregarAlCarrito(producto, 'jugo', -1);
-                    setCantidades(prev => {
-                      const updated = { ...prev };
-                      if (nuevaCantidad <= 0) delete updated[keyId];
-                      else updated[keyId] = nuevaCantidad;
-                      return updated;
-                    });
-                  }}
-                  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
-                  >
-                  −
-                </button>
-                <span className="text-lg font-semibold text-gray-800 w-6 text-center">{cantidad}</span>
-                <button
-                  onClick={() => {
-                    const nuevaCantidad = cantidad + 1;
-                    agregarAlCarrito(producto, 'jugo', 1);
-                    setCantidades(prev => ({
-                      ...prev,
-                      [keyId]: nuevaCantidad,
-                    }));
-                  }}
-                  className="bg-green-500 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold transition duration-200 shadow"
-                  >
                   +
                 </button>
               </div>

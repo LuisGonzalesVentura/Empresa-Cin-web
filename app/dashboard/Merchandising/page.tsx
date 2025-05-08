@@ -137,6 +137,7 @@ export default function Page() {
   };
   
 
+ 
   if (cargando) {
     return (
       <div className="flex flex-col items-center justify-center h-[75vh] bg-gradient-to-br from-white to-orange-50 px-6 text-center animate-fade-in">
@@ -147,24 +148,24 @@ export default function Page() {
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }
   
-
+  
   return (
     <main className="bg-white text-black font-poppins px-4 md:px-16 py-6">
 {/* Título de categoría */}
 
 
 <div className="flex items-center justify-between mb-6 flex-wrap">
-      <h2 className="text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
+      <h2 className=" text-orange-600   text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
       Merchandising
       </h2>
      
@@ -191,7 +192,7 @@ export default function Page() {
 
       return (
         <div key="merchandising">
-          <h3 className="text-2xl font-bold mt-8 mb-4 text-left">
+          <h3 className=" text-orange-600   text-2xl font-bold mt-8 mb-4 text-left">
             Productos de Merchandising
           </h3>
 

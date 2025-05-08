@@ -1,8 +1,6 @@
 'use client';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { faBottleWater, faGlassWhiskey, faWineBottle } from '@fortawesome/free-solid-svg-icons';
@@ -17,7 +15,6 @@ interface Producto {
   nombre_ciudad: string;
 }
 
-const images = ['/banner1.png', '/banner2.png', '/banner3.png'];
 
 export default function Page() {
   const [current, setCurrent] = useState(0);
@@ -72,10 +69,7 @@ export default function Page() {
         setCiudades(data);
       });
 
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
+      
   }, []);
 
  
@@ -156,22 +150,24 @@ export default function Page() {
             className="w-full h-full object-contain drop-shadow-xl"
           />
         </div>
-        <p className="text-orange-600 text-3xl sm:text-4xl font-extrabold animate-pulse">
-          Cargando productos CIN...
-        </p>
-        <p className="text-lg sm:text-xl text-gray-700 mt-4">
-          Esto tomará solo unos segundos
-        </p>
+       
+        <p className="text-lg sm:text-xl text-gray-700 mt-4 font-medium">
+  Esto tomará solo unos segundos
+</p>
+
+
       </div>
     );
   }
+  
+  
   
   
   return (
     <main className="bg-white text-black font-poppins px-4 md:px-16 py-6">
 {/* Título de categoría */}
 <div className="flex items-center justify-between mb-6 flex-wrap">
-      <h2 className="text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
+      <h2 className=" text-orange-600 text-4xl font-bold text-center md:text-left mb-4 md:mb-0">
         Hervidos
       </h2>
     
