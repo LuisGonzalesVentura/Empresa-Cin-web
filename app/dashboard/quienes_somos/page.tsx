@@ -48,7 +48,7 @@ const QuienesSomos = () => {
 
       {/* Imagen decorativa arriba de misión y visión */}
       <div className="w-full flex justify-center mb-8 sm:mb-10">
-        <img src="/logo.png" alt="Industrias CIN" className="h-32 sm:h-40 object-contain" />
+        <img src="/carga.png" alt="Industrias CIN" className="h-32 sm:h-40 object-contain" />
       </div>
 
       {/* Misión y Visión en bloques lado a lado mejorados */}
