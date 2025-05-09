@@ -53,7 +53,7 @@ export default function LoginForm() {
           },
         }).then(() => {
           if (isClient) {
-            router.push('/dashboard/login/dashboard_login');
+            router.push('/dashboard');
           }
         });
       } else {
