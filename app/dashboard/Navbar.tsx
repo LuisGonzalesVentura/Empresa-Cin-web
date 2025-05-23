@@ -1,386 +1,250 @@
-'use client';
-import { useRouter } from 'next/navigation'; // Importa el hook useRouter de Next.js
-import { FaSearch, FaMapMarkerAlt, FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
-import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
-
-interface Ciudad {
-  id_ciudad: number;
-  nombre_ciudad: string;
-  
-}
-interface ProductoCarrito {
-  id_producto: number;
-  nombre_producto: string;
-  cantidad: number;
-  precio: number;
-  foto: string;
-}
+"use client";
+import { usePathname } from "next/navigation";
+import { useNavbarLogic } from "@/lib/navbar/logica_navbar";
+import {
+  FaSearch,
+  FaMapMarkerAlt,
+  FaUser,
+  FaShoppingCart,
+  FaBars,
+} from "react-icons/fa";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Navbar() {
-  const pathname = usePathname(); // para detectar la ruta actual
+  const {
+    ciudades,
+    ciudadSeleccionada,
+    mostrarAlerta,
+    setMostrarAlerta,
+    cantidadTotal,
+    userName,
+    isClient,
+    handleSeleccionCiudad,
+    handleCarritoClick,
+    handleUserClick,
+  } = useNavbarLogic();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [busqueda, setBusqueda] = useState("");
-  const router = useRouter();
-  const [ciudades, setCiudades] = useState<Ciudad[]>([]);
-  const [mostrarDropdown, setMostrarDropdown] = useState(false);
-  const [mostrarAlerta, setMostrarAlerta] = useState(false);
-  const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
-  const [cantidadTotal, setCantidadTotal] = useState(0); // Estado del carrito
-  const [cantidades, setCantidades] = useState<Record<string, number>>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('cantidades');
-      return saved ? JSON.parse(saved) : {};
-    }
-    return {};
-  });
+  const pathname = usePathname();
 
-  const [isClient, setIsClient] = useState(false);
-  const [userName, setUserName] = useState<string | null>(null);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-// Función para alternar el estado del menú
-const toggleMenu = () => {
-  setIsMenuOpen(!isMenuOpen);
-};
-
-// Función para cerrar el menú al hacer clic en un enlace
-const closeMenu = () => {
-  setIsMenuOpen(false);
-};
-
-  useEffect(() => {
-    const guardado = localStorage.getItem('cantidades');
-    if (guardado) {
-      setCantidades(JSON.parse(guardado));
-    }
-    
-
-setIsClient(true); // Esto asegura que el siguiente código solo se ejecuta en el cliente
-const ciudadGuardada = localStorage.getItem("ciudadSeleccionada");
-if (ciudadGuardada) {
-  setCiudadSeleccionada(ciudadGuardada);
-}else {
-  setMostrarAlerta(true); // Muestra el modal si no hay ciudad guardada
-}
-
-fetch("/api/ciudades")
-  .then((res) => res.json())
-  .then((data) => setCiudades(data))
-  .catch((err) => console.error("Error al obtener ciudades:", err));
-
-  const carritoLocal = localStorage.getItem('carrito');
-  if (carritoLocal) {
-    try {
-      const carrito: ProductoCarrito[] = JSON.parse(carritoLocal);
-      const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-      setCantidadTotal(total);
-    } catch (error) {
-      console.error("Error al leer el carrito:", error);
-    }
-  }
- // 🔄 Evento de actualización del carrito desde otras partes de la app
- const handleCarritoActualizado = (e: any) => {
-  const cantidadTotal = e.detail.cantidadTotal;
-  setCantidadTotal(cantidadTotal);
-};
-window.addEventListener('carritoActualizado', handleCarritoActualizado);
-
-// 🧠 Evento de cambio en el localStorage (en caso de que otra pestaña lo modifique)
-const handleStorageChange = () => {
-  const carritoActualizado = localStorage.getItem('carrito');
-  if (carritoActualizado) {
-    try {
-      const carrito: ProductoCarrito[] = JSON.parse(carritoActualizado);
-      const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-      setCantidadTotal(total);
-    } catch (error) {
-      console.error("Error al actualizar el carrito:", error);
-    }
-  } else {
-    setCantidadTotal(0);
-  }
-};
-window.addEventListener('storage', handleStorageChange);
-
-//  Cleanup
-return () => {
-  window.removeEventListener('storage', handleStorageChange);
-  window.removeEventListener('carritoActualizado', handleCarritoActualizado);
-};
-
-}, []);
-
-useEffect(() => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('cantidades', JSON.stringify(cantidades));
-  }
-}, [cantidades]);
-
-  const handleSeleccionCiudad = (nombre: string) => {
-
-    setCiudadSeleccionada(nombre);
-    setMostrarDropdown(false);
-    setMostrarAlerta(false); // Se oculta la alerta cuando se selecciona una ciudad
-    setCiudadSeleccionada(nombre); // Cambia el estado local
-    localStorage.setItem('ciudadSeleccionada', nombre); // Guarda en el localStorage
+  const toggleMenu = () => {
+    setIsMenuOpen((prev) => !prev);
   };
-  const handleCarritoClick = () => {
-    // Redirige a /carrito/detalle cuando el ícono de carrito es clickeado
-    router.push('/dashboard/carrito');
+  if (!isClient) return null;
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
+  return (
+    <nav className="bg-orange-500 px-6 py-2 fixed top-0 left-0 w-full z-50">
+      <div className="flex justify-between items-center w-full">
+        {/* Logo */}
+        <div className="flex items-center">
+          <Link href="/dashboard">
+            <Image
+              src="/logo_cinn.png"
+              alt="Logo CIN"
+              width={50}
+              height={50}
+              className="w-auto h-20"
+            />
+          </Link>
+        </div>
 
-  
-  useEffect(() => {
-    const cargarUsuario = () => {
-      const userSession = sessionStorage.getItem('user'); // 👈 usamos sessionStorage
-      if (userSession) {
-        const user = JSON.parse(userSession);
-        setUserName(user.nombre);
-      } else {
-        setUserName(null);
-      }
-    };
+        {/* Iconos: ubicación, usuario, carrito */}
+        <div className="flex items-center space-x-4 text-white relative max-w-[70%] sm:max-w-full">
+          {/* Ubicación */}
+          <div className="flex flex-col relative max-w-[120px] sm:max-w-none">
+            <div
+              className="flex items-center space-x-1 cursor-pointer truncate"
+              onClick={() => setMostrarAlerta(true)}
+            >
+              <FaMapMarkerAlt />
+              <span className="text-sm truncate">
+                {ciudadSeleccionada || "Selecciona tu ubicación"}
+              </span>
+            </div>
+          </div>
 
-    cargarUsuario(); // Al montar el componente
+          {/* Usuario */}
+          <div className="flex items-center space-x-2 max-w-[100px] sm:max-w-none overflow-hidden">
+            <FaUser
+              className="text-lg cursor-pointer"
+              onClick={handleUserClick}
+            />
+            {userName && (
+              <span className="text-sm font-semibold text-white truncate block">
+                {userName.split(" ")[0]}
+              </span>
+            )}
+          </div>
 
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'user') {
-        cargarUsuario();
-      }
-    };
+          {/* Carrito */}
+          <button
+            onClick={handleCarritoClick}
+            className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
+          >
+            <FaShoppingCart className="text-2xl text-white" />
+            {cantidadTotal > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
+                {cantidadTotal}
+              </span>
+            )}
+          </button>
+        </div>
 
-    const handleUserChanged = () => {
-      cargarUsuario();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('userChanged', handleUserChanged);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        cargarUsuario();
-      }
-    });
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userChanged', handleUserChanged);
-      document.removeEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          cargarUsuario();
-        }
-      });
-    };
-  }, []);
-
-  const handleUserClick = () => {
-    const userSession = sessionStorage.getItem("user");
-    if (userSession) {
-      router.push('/dashboard/login/dashboard_login');
-    } else {
-      router.push('/dashboard/login');
-    }
-  };
-
-  
-    
-
-    // No renderizamos contenido específico hasta que estemos en el cliente
-    if (!isClient) {
-      return null; // Devolvemos null para evitar el desajuste durante la hidratación
-    }
-
-    return (
-  <nav className="bg-orange-500 px-6 py-2 fixed top-0 left-0 w-full z-50">
-  <div className="flex justify-between items-center w-full">
-  {/* Logo */}
-  <div className="flex items-center">
-    <Link href="/dashboard">
-      <Image
-        src="/logo_cinn.png"
-        alt="Logo CIN"
-        width={50}
-        height={50}
-        className="w-auto h-20"
-      />
-    </Link>
-  </div>
-
-  {/* Iconos: ubicación, usuario, carrito */}
-  <div className="flex items-center space-x-4 text-white relative max-w-[70%] sm:max-w-full">
-    {/* Ubicación */}
-    <div className="flex flex-col relative max-w-[120px] sm:max-w-none">
-      <div 
-        className="flex items-center space-x-1 cursor-pointer truncate"
-        onClick={() => setMostrarAlerta(true)}
-      >
-        <FaMapMarkerAlt />
-        <span className="text-sm truncate">
-          {ciudadSeleccionada || 'Selecciona tu ubicación'}
-        </span>
+        {/* Menú hamburguesa */}
+        <div className="block lg:hidden">
+          <FaBars
+            className="text-white text-2xl cursor-pointer"
+            onClick={toggleMenu}
+          />
+        </div>
       </div>
-    </div>
 
-    {/* Usuario */}
-    <div className="flex items-center space-x-2 max-w-[100px] sm:max-w-none overflow-hidden">
-      <FaUser className="text-lg cursor-pointer" onClick={handleUserClick} />
-      {userName && (
-        <span className="text-sm font-semibold text-white truncate block">
-          {userName.split(' ')[0]}
-        </span>
-      )}
-    </div>
+      {/* Menú de navegación */}
+      <div
+        className={`lg:flex mt-2 transition-all duration-300 ease-in-out ${isMenuOpen ? "block max-h-[1000px]" : "hidden max-h-0"} lg:max-h-none lg:opacity-100`}
+        style={{ overflow: "hidden" }}
+      >
+        {/* Enlaces de navegación */}
+        <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
+          {[
+            { href: "/dashboard/ofertas", label: "Ofertas" },
+            { href: "/dashboard/promocionesss", label: "Promociones" },
+            { href: "/dashboard/jugos", label: "Jugos" },
+            { href: "/dashboard/hervidos", label: "Hervidos" },
+            { href: "/dashboard/contactanos", label: "Contáctanos" },
+            { href: "/dashboard/quienes_somos", label: "Quienes Somos" },
+            { href: "/dashboard/Merchandising", label: "Merchandising" },
+          ].map(({ href, label }) => (
+            <li
+              key={href}
+              onClick={closeMenu}
+              className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                pathname === href
+                  ? "text-yellow-400 font-bold"
+                  : "hover:text-yellow-500"
+              }`}
+            >
+              <Link href={href}>{label}</Link>
+            </li>
+          ))}
+        </ul>
 
-    {/* Carrito */}
-    <button
-      onClick={handleCarritoClick}
-      className="relative bg-transparent border-none cursor-pointer p-2 rounded-md transition-transform hover:scale-110"
-    >
-      <FaShoppingCart className="text-2xl text-white" />
-      {cantidadTotal > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-white shadow-md shadow-black/30 min-w-[18px] text-center">
-          {cantidadTotal}
-        </span>
-      )}
-    </button>
-  </div>
-
-  {/* Menú hamburguesa */}
-  <div className="block lg:hidden">
-    <FaBars className="text-white text-2xl cursor-pointer" onClick={toggleMenu} />
-  </div>
-</div>  
-
-      
-{/* Menú de navegación */}
-<div
-  className={`lg:flex mt-2 transition-all duration-300 ease-in-out ${isMenuOpen ? 'block max-h-[1000px]' : 'hidden max-h-0'} lg:max-h-none lg:opacity-100`}
-  style={{ overflow: 'hidden' }}
->
-  {/* Enlaces de navegación */}
-  <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 text-white font-medium text-lg">
-  {[
-    { href: '/dashboard/invoices', label: 'Ofertas' },
-    { href: '/dashboard/promocionesss', label: 'Promociones' },
-    { href: '/dashboard/jugos', label: 'Jugos' },
-    { href: '/dashboard/hervidos', label: 'Hervidos' },
-    { href: '/dashboard/contactanos', label: 'Contáctanos' },
-    { href: '/dashboard/quienes_somos', label: 'Quienes Somos' },
-    { href: '/dashboard/Merchandising', label: 'Merchandising' },
-  ].map(({ href, label }) => (
-    <li
-  key={href}
-  onClick={closeMenu}
-  className={`cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105 ${
-    pathname === href
-      ? 'text-yellow-400 font-bold'
-      : 'hover:text-yellow-500'
-  }`}
->
-  <Link href={href}>{label}</Link>
-</li>
-
-  ))}
-</ul>
-
-{/* Barra de búsqueda mejorada UX/UI con expansión al enfocar */}
-<form
-  action="/dashboard/filtrado_busqueda"
-  method="GET"
-  className="relative w-full max-w-sm ml-auto mr-6 mt-4 lg:mt-0 transition-all duration-300"
->
-  <div className="flex items-center relative group">
-    {/* Input */}
-    <input
-      type="text"
-      name="query"
-      placeholder="Buscar productos..."
-      value={busqueda}
-      onChange={(e) => setBusqueda(e.target.value)}
-      className="pl-11 pr-28 py-2.5 rounded-full text-sm shadow-md bg-white text-gray-700 
+        {/* Barra de búsqueda mejorada UX/UI con expansión al enfocar */}
+        <form
+          action="/dashboard/filtrado_busqueda"
+          method="GET"
+          className="relative w-full max-w-sm ml-auto mr-6 mt-4 lg:mt-0 transition-all duration-300"
+        >
+          <div className="flex items-center relative group">
+            {/* Input */}
+            <input
+              type="text"
+              name="query"
+              placeholder="Buscar productos..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="pl-11 pr-28 py-2.5 rounded-full text-sm shadow-md bg-white text-gray-700 
                 border border-orange-400 placeholder-gray-500 
                 focus:outline-none focus:ring-2 focus:ring-orange-500 
                 transition-all duration-500 focus:shadow-lg focus:scale-[1.03]
                 w-full sm:w-[calc(100%+20px)] focus:w-[calc(100%+40px)]"
-    />
+            />
 
-    {/* Icono de búsqueda */}
-    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 group-focus-within:text-orange-600 transition-colors duration-300" />
+            {/* Icono de búsqueda */}
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 group-focus-within:text-orange-600 transition-colors duration-300" />
 
-    {/* Botón */}
-    <button
-      type="submit"
-      className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-orange-500 hover:bg-orange-600 text-white 
+            {/* Botón */}
+            <button
+              type="submit"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-orange-500 hover:bg-orange-600 text-white 
                  px-4 py-1.5 rounded-full text-sm font-semibold shadow-md transition-all duration-300 hover:scale-105 z-10"
-    >
-      Buscar
-    </button>
-  </div>
-</form>
-
+            >
+              Buscar
+            </button>
+          </div>
+        </form>
       </div>
 
+      {/* Modal de alerta si no se ha seleccionado la ciudad */}
+      {mostrarAlerta && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in px-4 sm:px-0">
+          <div className="relative bg-white rounded-2xl p-5 sm:p-8 shadow-xl w-full max-w-md text-center space-y-4 sm:space-y-6">
+            {/* Botón de cerrar (X) */}
+            <button
+              onClick={() => setMostrarAlerta(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-orange-500 transition duration-200"
+              aria-label="Cerrar modal"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
 
+            {/* Icono de alerta */}
+            <div className="flex justify-center">
+              <svg
+                className="w-12 h-12 text-orange-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.702-1.14 1.132-2.052L13.132 4.948c-.526-.905-1.738-.905-2.264 0L4.95 16.948c-.57.912.078 2.052 1.132 2.052z"
+                />
+              </svg>
+            </div>
 
+            <h2 className="text-lg sm:text-2xl font-bold text-gray-800">
+              ¡Selecciona tu ubicación!
+            </h2>
+            <p className="text-gray-600 text-sm sm:text-base">
+              Para continuar, por favor selecciona tu ciudad de la lista.
+            </p>
 
-{/* Modal de alerta si no se ha seleccionado la ciudad */}
-{mostrarAlerta && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in px-4 sm:px-0">
-    <div className="relative bg-white rounded-2xl p-5 sm:p-8 shadow-xl w-full max-w-md text-center space-y-4 sm:space-y-6">
+            <select
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
+              onChange={(e) => {
+                localStorage.removeItem("carrito");
+                localStorage.removeItem("cantidades");
 
-      {/* Botón de cerrar (X) */}
-      <button
-        onClick={() => setMostrarAlerta(false)}
-        className="absolute top-3 right-3 text-gray-400 hover:text-orange-500 transition duration-200"
-        aria-label="Cerrar modal"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      {/* Icono de alerta */}
-      <div className="flex justify-center">
-        <svg className="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.702-1.14 1.132-2.052L13.132 4.948c-.526-.905-1.738-.905-2.264 0L4.95 16.948c-.57.912.078 2.052 1.132 2.052z" />
-        </svg>
-      </div>
-
-      <h2 className="text-lg sm:text-2xl font-bold text-gray-800">¡Selecciona tu ubicación!</h2>
-      <p className="text-gray-600 text-sm sm:text-base">
-        Para continuar, por favor selecciona tu ciudad de la lista.
-      </p>
-
-      <select
-        className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-200"
-        onChange={(e) => {
-          localStorage.removeItem('carrito');
-          localStorage.removeItem('cantidades');
-
-          handleSeleccionCiudad(e.target.value);
-          setMostrarAlerta(false);
-          window.location.reload();
-        }}
-        value={ciudadSeleccionada}
-      >
-        <option value="" disabled>-- Elige tu ciudad --</option>
-        {ciudades.map((ciudad) => (
-          <option key={ciudad.id_ciudad} value={ciudad.nombre_ciudad}>
-            {ciudad.nombre_ciudad}
-          </option>
-        ))}
-      </select>
-    </div>
-  </div>
-)}
-
-
+                handleSeleccionCiudad(e.target.value);
+                setMostrarAlerta(false);
+                window.location.reload();
+              }}
+              value={ciudadSeleccionada}
+            >
+              <option value="" disabled>
+                -- Elige tu ciudad --
+              </option>
+              {ciudades.map((ciudad) => (
+                <option key={ciudad.id_ciudad} value={ciudad.nombre_ciudad}>
+                  {ciudad.nombre_ciudad}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

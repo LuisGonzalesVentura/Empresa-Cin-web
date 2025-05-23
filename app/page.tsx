@@ -1,26 +1,21 @@
-'use client';
+"use client";
 
-import './ui/global.css';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import "@/components/ui/global.css";
+
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-white to-orange-50 text-black p-6 relative font-sans">
       <div className="flex flex-col items-center text-center space-y-6 animate-fade-in">
-        <Image
-          src="/carga.png"
-          alt="Logo CIN"
-          width={160}
-          height={160}
-         
-        />
+        <Image src="/carga.png" alt="Logo CIN" width={160} height={160} />
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
           ¡Estamos construyendo algo increíble!
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-md">
-          El sitio web oficial de <strong>Industrias CIN</strong> 
+          El sitio web oficial de <strong>Industrias CIN</strong>
         </p>
 
         <Link href="/dashboard">

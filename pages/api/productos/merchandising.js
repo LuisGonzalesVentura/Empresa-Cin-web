@@ -1,4 +1,4 @@
-import postgres from 'postgres';
+import postgres from "postgres";
 
 const sql = postgres(process.env.POSTGRES_URL);
 
@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   try {
     // Verificar conexión
     await sql`SELECT NOW()`;
-    console.log('Conexión a la base de datos exitosa');
+    console.log("Conexión a la base de datos exitosa");
 
     // Consultar todos los productos de tb_productos_merchandising con unión a tb_ciudades
     const productos = await sql`
@@ -25,11 +25,11 @@ export default async function handler(req, res) {
 
     res.status(200).json(productos);
   } catch (error) {
-    console.error('Error al obtener productos de merchandising:', error);
+    console.error("Error al obtener productos de merchandising:", error);
 
     res.status(500).json({
-      error: 'Error al conectar o consultar la base de datos',
-      details: error.message
+      error: "Error al conectar o consultar la base de datos",
+      details: error.message,
     });
   }
 }

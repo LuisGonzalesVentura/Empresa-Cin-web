@@ -1,9 +1,9 @@
 // app/layout.tsx
-import './ui/global.css';
+import "@/components/ui/global.css";
 
 export const metadata = {
-  title: 'Industrias CIN',
-  description: 'Bienvenido al panel de Industrias CIN',
+  title: "Industrias CIN",
+  description: "Bienvenido al panel de Industrias CIN",
 };
 
 export default function RootLayout({
