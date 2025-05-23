@@ -1,6 +1,6 @@
 "use client";
 
-import "@/components/ui/global.css";
+import "../components/ui/global.css";
 
 import Image from "next/image";
 import Link from "next/link";
