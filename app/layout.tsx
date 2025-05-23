@@ -1,5 +1,5 @@
 // app/layout.tsx
-import "@/components/ui/global.css";
+import "../components/ui/global.css";
 
 export const metadata = {
   title: "Industrias CIN",
