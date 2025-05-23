@@ -41,13 +41,12 @@ export default function CarritoPage() {
                 className="flex justify-between items-center mb-6 border-b pb-4"
               >
                 <div className="flex items-center space-x-6">
-                  <Image
-                    src={`/uploads/${producto.foto}`}
-                    alt={producto.nombre_producto}
-                    width={96}
-                    height={96}
-                    className="object-cover rounded-md shadow-md"
-                  />
+                 <img
+                  src={`/uploads/${producto.foto}`}
+                  alt={producto.nombre_producto}
+width={100}
+                    height={100}
+                    className="object-cover rounded-md shadow-md"                />
                   <div className="flex flex-col">
                     <span className="text-lg font-semibold text-gray-800">
                       {producto.nombre_producto}
