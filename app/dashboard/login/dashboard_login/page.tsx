@@ -2,7 +2,7 @@
 import { FaWhatsapp, FaUserCircle, FaArrowLeft } from "react-icons/fa";
 import { User as UserIcon, Package, LogOut } from "lucide-react";
 import { useDashboardUsuarioViewModel } from "../../../../lib/login/useDashboardUsuarioViewModel";
-import { InputField } from "../../../..//components/UI/InputField";
+import { InputField } from "../../../../components/ui/InputField";
 import Link from "next/link";
 import Head from "next/head";
 
